@@ -1,0 +1,39 @@
+{
+	"name": "LT_customer",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BankMarketBlob",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "BankMarketSource"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "LT_customer.json",
+				"container": "files"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"Cliente ID": {
+					"type": "string"
+				},
+				"Nombre": {
+					"type": "string"
+				},
+				"Apellido": {
+					"type": "string"
+				},
+				"Segmento": {
+					"type": "string"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

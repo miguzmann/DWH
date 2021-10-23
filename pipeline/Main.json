@@ -1,0 +1,37 @@
+{
+	"name": "Main",
+	"properties": {
+		"activities": [
+			{
+				"name": "PP_Metas",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "MiguelAngel_ETL",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Coarse"
+				}
+			}
+		],
+		"folder": {
+			"name": "ETL_Metas"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-10-23T04:18:45Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

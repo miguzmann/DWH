@@ -1,0 +1,58 @@
+{
+	"name": "DimCliente",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ConnectorAzureRafael",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DWH"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Codigo",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Cliente_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Nombre",
+				"type": "varchar"
+			},
+			{
+				"name": "Apellido",
+				"type": "varchar"
+			},
+			{
+				"name": "Segmento",
+				"type": "varchar"
+			},
+			{
+				"name": "Pais",
+				"type": "varchar"
+			},
+			{
+				"name": "Ciudad",
+				"type": "varchar"
+			},
+			{
+				"name": "Estado",
+				"type": "varchar"
+			},
+			{
+				"name": "Region",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_Cliente"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

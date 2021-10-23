@@ -1,0 +1,9 @@
+{
+	"name": "ETLDWH1-3",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "c48dc577-f2c3-4a29-ba7d-7c268517284e",
+		"tenantId": "c06fb559-1b68-4b84-a14f-47d0d837a5ab"
+	}
+}

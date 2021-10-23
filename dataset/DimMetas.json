@@ -1,0 +1,47 @@
+{
+	"name": "DimMetas",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ConnectorAzureRafael",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DWH"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "PK_Meta",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Año",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Mes",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Region_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TARGET",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 5
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_Metas"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

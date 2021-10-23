@@ -1,0 +1,69 @@
+{
+	"name": "DimDetalleOrdenes",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ConnectorAzureRafael",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DWH"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "PK_DetalleOrden",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PK_Order",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Detalle_Orden",
+				"type": "varchar"
+			},
+			{
+				"name": "Linea_Total",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Cantidad",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 5
+			},
+			{
+				"name": "Descuento",
+				"type": "decimal",
+				"precision": 5,
+				"scale": 5
+			},
+			{
+				"name": "Precio_Unitario",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 5
+			},
+			{
+				"name": "Ganancia",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 5
+			},
+			{
+				"name": "PK_Producto",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_detalle_ordenes"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

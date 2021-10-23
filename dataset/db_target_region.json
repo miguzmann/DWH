@@ -1,0 +1,45 @@
+{
+	"name": "db_target_region",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BankMarketBlob",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "BankMarketSource"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "db_target_region.csv",
+				"container": "files"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"nullValue": "null",
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Año",
+				"type": "String"
+			},
+			{
+				"name": "Mes",
+				"type": "String"
+			},
+			{
+				"name": "Region ID",
+				"type": "String"
+			},
+			{
+				"name": "Target",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

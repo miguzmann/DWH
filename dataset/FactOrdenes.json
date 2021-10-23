@@ -1,0 +1,78 @@
+{
+	"name": "FactOrdenes",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ConnectorAzureRafael",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DWH"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "num_order",
+				"type": "varchar"
+			},
+			{
+				"name": "OrderId",
+				"type": "varchar"
+			},
+			{
+				"name": "fec_orden",
+				"type": "date"
+			},
+			{
+				"name": "fec_envio",
+				"type": "date"
+			},
+			{
+				"name": "imp_subtotal",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "id_modo",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "modo_envio",
+				"type": "varchar"
+			},
+			{
+				"name": "ID_Tipo_envio",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "descripcion_envio",
+				"type": "varchar"
+			},
+			{
+				"name": "Region_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Region_descripcion",
+				"type": "varchar"
+			},
+			{
+				"name": "Detalle_Region",
+				"type": "varchar"
+			},
+			{
+				"name": "Codigo",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "FACT_Ordenes"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

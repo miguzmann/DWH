@@ -1,0 +1,58 @@
+{
+	"name": "DimProducto",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ConnectorAzureRafael",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DWH"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Producto_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Categoria_Producto_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Descripcion_Subcategoria",
+				"type": "varchar"
+			},
+			{
+				"name": "Numero_Producto",
+				"type": "varchar"
+			},
+			{
+				"name": "Categoria_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Nombre_Producto",
+				"type": "varchar"
+			},
+			{
+				"name": "Categoria_Producto_ID_1",
+				"type": "varchar"
+			},
+			{
+				"name": "Descripcion_Categoria",
+				"type": "varchar"
+			},
+			{
+				"name": "Subcategoria_ID",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_Producto"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

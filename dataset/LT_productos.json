@@ -1,0 +1,44 @@
+{
+	"name": "LT_productos",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BankMarketBlob",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "BankMarketSource"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "LT_productos.csv",
+				"container": "files"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Producto ID",
+				"type": "String"
+			},
+			{
+				"name": "Numero Producto",
+				"type": "String"
+			},
+			{
+				"name": "Producto Sub Categoria ID",
+				"type": "String"
+			},
+			{
+				"name": "Nombre Producto",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

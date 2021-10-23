@@ -1,0 +1,33 @@
+{
+	"name": "tb_modo_envio",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BankMarketBlob",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"id_modo": {
+				"type": "int"
+			},
+			"Descripcion": {
+				"type": "string"
+			},
+			"Tipo_x0020_ID": {
+				"type": "int"
+			}
+		},
+		"folder": {
+			"name": "BankMarketSource"
+		},
+		"annotations": [],
+		"type": "Xml",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "tb_modo_envio.xml",
+				"container": "files"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
