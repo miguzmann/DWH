@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "MiguelAngel_ETL",
+						"referenceName": "Grupo1-3ETL",
 						"type": "DataFlowReference"
 					},
 					"compute": {
