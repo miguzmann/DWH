@@ -1,0 +1,52 @@
+{
+	"name": "Product_workflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "LT_productos",
+						"type": "DatasetReference"
+					},
+					"name": "ExtLTProduct"
+				},
+				{
+					"dataset": {
+						"referenceName": "LT_productos_sub_categoria",
+						"type": "DatasetReference"
+					},
+					"name": "ExtLTProductSubcategory"
+				},
+				{
+					"dataset": {
+						"referenceName": "LT_productos_categoria",
+						"type": "DatasetReference"
+					},
+					"name": "ExtLTCategory"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DimProducto",
+						"type": "DatasetReference"
+					},
+					"name": "AlmacenarProducto"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SurrogateKeyProduct"
+				},
+				{
+					"name": "ProductoUnion1"
+				},
+				{
+					"name": "ProductoUnion2"
+				}
+			],
+			"script": "source(output(\n\t\t{Producto ID} as string,\n\t\t{Numero Producto} as string,\n\t\t{Producto Sub Categoria ID} as string,\n\t\t{Nombre Producto} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTProduct\nsource(output(\n\t\t{Subcategoria Producto ID} as string,\n\t\t{Categoria Producto ID} as string,\n\t\t{Descripcion Subcategoria} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTProductSubcategory\nsource(output(\n\t\t{Categoria Producto ID} as string,\n\t\t{Descripcion Categoria} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTCategory\nExtLTProduct keyGenerate(output(PK_Producto as long),\n\tstartAt: 1L) ~> SurrogateKeyProduct\nSurrogateKeyProduct, ExtLTCategory union(byName: true)~> ProductoUnion1\nProductoUnion1, ExtLTProductSubcategory union(byName: true)~> ProductoUnion2\nProductoUnion2 sink(allowSchemaDrift: true,\n\tvalidateSchema: true,\n\tinput(\n\t\tProducto_ID as integer,\n\t\tCategoria_Producto_ID as string,\n\t\tDescripcion_Subcategoria as string,\n\t\tNumero_Producto as string,\n\t\tCategoria_ID as string,\n\t\tNombre_Producto as string,\n\t\tCategoria_Producto_ID_1 as string,\n\t\tDescripcion_Categoria as string,\n\t\tSubcategoria_ID as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tProducto_ID = {Producto ID},\n\t\tCategoria_Producto_ID = {Categoria Producto ID},\n\t\tDescripcion_Subcategoria = {Producto Sub Categoria ID},\n\t\tNumero_Producto = {Nombre Producto},\n\t\tCategoria_ID = {Categoria Producto ID},\n\t\tNombre_Producto = {Numero Producto},\n\t\tCategoria_Producto_ID_1 = {Categoria Producto ID},\n\t\tDescripcion_Categoria = {Descripcion Categoria},\n\t\tSubcategoria_ID = {Producto Sub Categoria ID}\n\t)) ~> AlmacenarProducto"
+		}
+	}
+}
