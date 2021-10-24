@@ -1,0 +1,9 @@
+{
+	"name": "ETL_Productos",
+	"properties": {
+		"folder": {
+			"name": "ETL_Productos"
+		},
+		"annotations": []
+	}
+}
