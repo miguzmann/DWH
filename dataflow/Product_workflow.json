@@ -26,7 +26,15 @@
 					"name": "ExtLTCategory"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DimProducto",
+						"type": "DatasetReference"
+					},
+					"name": "AlmacenarProducto"
+				}
+			],
 			"transformations": [
 				{
 					"name": "JoinSubcategory"
@@ -38,7 +46,7 @@
 					"name": "JoinCategory"
 				}
 			],
-			"script": "source(output(\n\t\t{Producto ID} as string,\n\t\t{Numero Producto} as string,\n\t\t{Producto Sub Categoria ID} as string,\n\t\t{Nombre Producto} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTProduct\nsource(output(\n\t\t{Subcategoria Producto ID} as string,\n\t\t{Categoria Producto ID} as string,\n\t\t{Descripcion Subcategoria} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTProductSubcategory\nsource(output(\n\t\t{Categoria Producto ID} as string,\n\t\t{Descripcion Categoria} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTCategory\nExtLTProduct, ExtLTProductSubcategory join({Producto Sub Categoria ID} == {Subcategoria Producto ID},\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinSubcategory\nJoinSubcategory keyGenerate(output(PK_Product as long),\n\tstartAt: 1L) ~> SurrogateKeyProduct\nSurrogateKeyProduct, ExtLTCategory join(ExtLTProductSubcategory@{Categoria Producto ID} == ExtLTCategory@{Categoria Producto ID},\n\tjoinType:'right',\n\tbroadcast: 'auto')~> JoinCategory"
+			"script": "source(output(\n\t\t{Producto ID} as string,\n\t\t{Numero Producto} as string,\n\t\t{Producto Sub Categoria ID} as string,\n\t\t{Nombre Producto} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTProduct\nsource(output(\n\t\t{Subcategoria Producto ID} as string,\n\t\t{Categoria Producto ID} as string,\n\t\t{Descripcion Subcategoria} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTProductSubcategory\nsource(output(\n\t\t{Categoria Producto ID} as string,\n\t\t{Descripcion Categoria} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTCategory\nExtLTProduct, ExtLTProductSubcategory join({Producto Sub Categoria ID} == {Subcategoria Producto ID},\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> JoinSubcategory\nJoinSubcategory keyGenerate(output(PK_Product as long),\n\tstartAt: 1L) ~> SurrogateKeyProduct\nSurrogateKeyProduct, ExtLTCategory join(ExtLTProductSubcategory@{Categoria Producto ID} == ExtLTCategory@{Categoria Producto ID},\n\tjoinType:'right',\n\tbroadcast: 'auto')~> JoinCategory\nJoinCategory sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tProducto_ID as integer,\n\t\tCategoria_Producto_ID as string,\n\t\tDescripcion_Subcategoria as string,\n\t\tNumero_Producto as string,\n\t\tCategoria_ID as string,\n\t\tNombre_Producto as string,\n\t\tCategoria_Producto_ID_1 as string,\n\t\tDescripcion_Categoria as string,\n\t\tSubcategoria_ID as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tProducto_ID = PK_Product,\n\t\tCategoria_Producto_ID = ExtLTProductSubcategory@{Categoria Producto ID},\n\t\tDescripcion_Subcategoria = {Descripcion Subcategoria},\n\t\tNumero_Producto = {Numero Producto},\n\t\tCategoria_ID = ExtLTCategory@{Categoria Producto ID},\n\t\tNombre_Producto = {Numero Producto},\n\t\tCategoria_Producto_ID_1 = ExtLTCategory@{Categoria Producto ID},\n\t\tDescripcion_Categoria = {Descripcion Categoria},\n\t\tSubcategoria_ID = {Subcategoria Producto ID}\n\t)) ~> AlmacenarProducto"
 		}
 	}
 }
