@@ -19,12 +19,6 @@
 						"referenceName": "Product_workflow",
 						"type": "DataFlowReference"
 					},
-					"staging": {
-						"linkedService": {
-							"referenceName": "BankMarketBlob",
-							"type": "LinkedServiceReference"
-						}
-					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
