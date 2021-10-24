@@ -15,7 +15,8 @@
 				"type": "AzureBlobStorageLocation",
 				"fileName": "Clientes.csv",
 				"container": "files"
-			}
+			},
+			"encodingName": "UTF-8"
 		},
 		"schema": {
 			"type": "object",
