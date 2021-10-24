@@ -1,9 +1,0 @@
-{
-	"name": "DimProducts",
-	"properties": {
-		"folder": {
-			"name": "ETLProducts"
-		},
-		"annotations": []
-	}
-}
