@@ -1,0 +1,548 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ETLDWH1-3"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Main')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "PP_Metas",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "TipoDeEnvioTransform",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Target_Workflow",
+								"type": "DataFlowReference"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Coarse"
+						}
+					},
+					{
+						"name": "ETL_Products",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "PP_Metas",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Product_workflow",
+								"type": "DataFlowReference"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine",
+							"runConcurrently": true,
+							"continueOnError": true
+						}
+					},
+					{
+						"name": "ModoDeEnvioTransform",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "XmlSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "XmlReadSettings",
+									"validationMode": "none",
+									"namespaces": true
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "[['@id_modo']"
+										},
+										"sink": {
+											"path": "idModo"
+										}
+									},
+									{
+										"source": {
+											"path": "[['@Descripcion']"
+										},
+										"sink": {
+											"path": "Desc"
+										}
+									},
+									{
+										"source": {
+											"path": "[['@Tipo_x0020_ID']"
+										},
+										"sink": {
+											"path": "IdTipoEnvio"
+										}
+									}
+								],
+								"collectionReference": "$['Data']['table_maestria.tb_modo_envio']['maestria.tb_modo_envio']"
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "tb_modo_envio",
+								"type": "DatasetReference",
+								"parameters": {
+									"id_modo": "id_modo",
+									"Descripcion": "Descripcion",
+									"Tipo_x0020_ID": "Descripcion"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "tb_Modo_Envio_Tra",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "TipoDeEnvioTransform",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "ModoDeEnvioTransform",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "XmlSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "XmlReadSettings",
+									"validationMode": "none",
+									"namespaces": true
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "[['@id_tipo']"
+										},
+										"sink": {
+											"path": "idTipoEnvio"
+										}
+									},
+									{
+										"source": {
+											"path": "[['@Descripción']"
+										},
+										"sink": {
+											"path": "descTipoEnvio"
+										}
+									}
+								],
+								"collectionReference": "$['Data']['table_maestria.tb_tipo_envio']['maestria.tb_tipo_envio']"
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "tb_tipo_envio",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "tb_tipo_envio_Tra",
+								"type": "DatasetReference"
+							}
+						]
+					}
+				],
+				"folder": {
+					"name": "ETL_Metas"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-10-23T04:18:45Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/Target_Workflow')]",
+				"[concat(variables('factoryId'), '/dataflows/Product_workflow')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Tests')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Product_workflow",
+								"type": "DataFlowReference"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"folder": {
+					"name": "ETL_Metas"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-10-23T04:50:24Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/Product_workflow')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LT_customer')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BankMarketBlob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketSource"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Clientes.csv",
+						"container": "files"
+					},
+					"encodingName": "UTF-8"
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"Cliente ID": {
+							"type": "string"
+						},
+						"Nombre": {
+							"type": "string"
+						},
+						"Apellido": {
+							"type": "string"
+						},
+						"Segmento": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/lt_customer_localizacion')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BankMarketBlob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketSource"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "lt_customer_localizacion.csv",
+						"container": "files"
+					},
+					"columnDelimiter": "\t",
+					"encodingName": "UTF-8",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Cliente ID",
+						"type": "String"
+					},
+					{
+						"name": "Pais",
+						"type": "String"
+					},
+					{
+						"name": "Ciudad",
+						"type": "String"
+					},
+					{
+						"name": "Estado",
+						"type": "String"
+					},
+					{
+						"name": "Codigo Postal",
+						"type": "String"
+					},
+					{
+						"name": "Region",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Customer_Workflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "LT_customer",
+								"type": "DatasetReference"
+							},
+							"name": "ExtLTCustomer"
+						},
+						{
+							"dataset": {
+								"referenceName": "lt_customer_localizacion",
+								"type": "DatasetReference"
+							},
+							"name": "ExtLTCustomerlocation"
+						},
+						{
+							"dataset": {
+								"referenceName": "Regiones",
+								"type": "DatasetReference"
+							},
+							"name": "RegionCustomer"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DimCliente",
+								"type": "DatasetReference"
+							},
+							"name": "AlmacenarCliente"
+						}
+					],
+					"transformations": [
+						{
+							"name": "SurrogateKeyCliente"
+						},
+						{
+							"name": "JoinCustomerlocation"
+						},
+						{
+							"name": "JoinCustomerRegion"
+						}
+					],
+					"script": "source(output(\n\t\t{Cliente ID} as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'documentPerLine') ~> ExtLTCustomer\nsource(output(\n\t\t{Cliente ID} as string,\n\t\tPais as string,\n\t\tCiudad as string,\n\t\tEstado as string,\n\t\t{Codigo Postal} as string,\n\t\tRegion as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ExtLTCustomerlocation\nsource(output(\n\t\t{Region ID} as string,\n\t\t{Region Desc} as string,\n\t\t{Detalle region} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> RegionCustomer\nExtLTCustomer keyGenerate(output(PK_Cliente as long),\n\tstartAt: 1L) ~> SurrogateKeyCliente\nSurrogateKeyCliente, ExtLTCustomerlocation join(ExtLTCustomer@{Cliente ID} == ExtLTCustomerlocation@{Cliente ID},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinCustomerlocation\nJoinCustomerlocation, RegionCustomer join(Region == {Region ID},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinCustomerRegion\nJoinCustomerRegion sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tCodigo as integer,\n\t\tCliente_ID as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string,\n\t\tPais as string,\n\t\tCiudad as string,\n\t\tEstado as string,\n\t\tRegion as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tCodigo = PK_Cliente,\n\t\tCliente_ID = ExtLTCustomer@{Cliente ID},\n\t\tNombre,\n\t\tApellido,\n\t\tSegmento,\n\t\tPais,\n\t\tCiudad,\n\t\tEstado,\n\t\tRegion\n\t)) ~> AlmacenarCliente"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/LT_customer')]",
+				"[concat(variables('factoryId'), '/datasets/lt_customer_localizacion')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Product_workflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "LT_productos",
+								"type": "DatasetReference"
+							},
+							"name": "ExtLTProduct"
+						},
+						{
+							"dataset": {
+								"referenceName": "LT_productos_sub_categoria",
+								"type": "DatasetReference"
+							},
+							"name": "ExtLTProductSubcategory"
+						},
+						{
+							"dataset": {
+								"referenceName": "LT_productos_categoria",
+								"type": "DatasetReference"
+							},
+							"name": "ExtLTCategory"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DimProducto",
+								"type": "DatasetReference"
+							},
+							"name": "AlmacenarProducto"
+						}
+					],
+					"transformations": [
+						{
+							"name": "JoinSubcategory"
+						},
+						{
+							"name": "SurrogateKeyProduct"
+						},
+						{
+							"name": "JoinCategory"
+						}
+					],
+					"script": "source(output(\n\t\t{Producto ID} as string,\n\t\t{Numero Producto} as string,\n\t\t{Producto Sub Categoria ID} as string,\n\t\t{Nombre Producto} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTProduct\nsource(output(\n\t\t{Subcategoria Producto ID} as string,\n\t\t{Categoria Producto ID} as string,\n\t\t{Descripcion Subcategoria} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTProductSubcategory\nsource(output(\n\t\t{Categoria Producto ID} as string,\n\t\t{Descripcion Categoria} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTCategory\nExtLTProduct, ExtLTProductSubcategory join({Producto Sub Categoria ID} == {Subcategoria Producto ID},\n\tjoinType:'right',\n\tbroadcast: 'auto')~> JoinSubcategory\nJoinSubcategory keyGenerate(output(PK_Product as long),\n\tstartAt: 1L) ~> SurrogateKeyProduct\nSurrogateKeyProduct, ExtLTCategory join(ExtLTProductSubcategory@{Categoria Producto ID} == ExtLTCategory@{Categoria Producto ID},\n\tjoinType:'right',\n\tbroadcast: 'both')~> JoinCategory\nJoinCategory sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tProducto_ID as integer,\n\t\tCategoria_Producto_ID as string,\n\t\tDescripcion_Subcategoria as string,\n\t\tNumero_Producto as string,\n\t\tCategoria_ID as string,\n\t\tNombre_Producto as string,\n\t\tCategoria_Producto_ID_1 as string,\n\t\tDescripcion_Categoria as string,\n\t\tSubcategoria_ID as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tProducto_ID = PK_Product,\n\t\tCategoria_Producto_ID = ExtLTCategory@{Categoria Producto ID},\n\t\tDescripcion_Subcategoria = {Descripcion Subcategoria},\n\t\tNumero_Producto = {Numero Producto},\n\t\tCategoria_ID = ExtLTCategory@{Categoria Producto ID},\n\t\tNombre_Producto = {Nombre Producto},\n\t\tCategoria_Producto_ID_1 = ExtLTCategory@{Categoria Producto ID},\n\t\tDescripcion_Categoria = {Descripcion Categoria},\n\t\tSubcategoria_ID = {Subcategoria Producto ID}\n\t)) ~> AlmacenarProducto"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Target_Workflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "db_target_region",
+								"type": "DatasetReference"
+							},
+							"name": "ExtTargetTable"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DimMetas",
+								"type": "DatasetReference"
+							},
+							"name": "AlmacenarMetasDWH"
+						}
+					],
+					"transformations": [
+						{
+							"name": "AgregarSurrogateKey"
+						}
+					],
+					"script": "source(output(\n\t\t{Año} as integer,\n\t\tMes as integer,\n\t\t{Region ID} as integer,\n\t\tTarget as decimal(18,5)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtTargetTable\nExtTargetTable keyGenerate(output(PK_Metas as long),\n\tstartAt: 1L) ~> AgregarSurrogateKey\nAgregarSurrogateKey sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tPK_Meta as integer,\n\t\t{Año} as integer,\n\t\tMes as integer,\n\t\tRegion_ID as integer,\n\t\tTARGET as decimal(18,5)\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tpreSQLs:['Truncate Table DIM_Metas'],\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPK_Meta = PK_Metas,\n\t\t{Año},\n\t\tMes,\n\t\tRegion_ID = {Region ID},\n\t\tTARGET = Target\n\t)) ~> AlmacenarMetasDWH"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
