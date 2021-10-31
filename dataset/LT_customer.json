@@ -13,7 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "Clientes.csv",
+				"fileName": "LT_customer.json",
 				"container": "files"
 			},
 			"encodingName": "UTF-8"
