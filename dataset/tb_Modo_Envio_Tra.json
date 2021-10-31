@@ -20,17 +20,14 @@
 		"schema": {
 			"type": "object",
 			"properties": {
-				"Cliente ID": {
+				"idModo": {
+					"type": "integer"
+				},
+				"Desc": {
 					"type": "string"
 				},
-				"Nombre": {
-					"type": "string"
-				},
-				"Apellido": {
-					"type": "string"
-				},
-				"Segmento": {
-					"type": "string"
+				"IdTipoEnvio": {
+					"type": "integer"
 				}
 			}
 		}
