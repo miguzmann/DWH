@@ -47,6 +47,10 @@
 			{
 				"name": "Region",
 				"type": "varchar"
+			},
+			{
+				"name": "Codigo Postal",
+				"type": "varchar"
 			}
 		],
 		"typeProperties": {
