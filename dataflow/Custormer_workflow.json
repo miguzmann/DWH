@@ -6,23 +6,15 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "Regiones",
+						"referenceName": "LT_productos",
 						"type": "DatasetReference"
 					},
-					"name": "extractData"
+					"name": "source1"
 				}
 			],
-			"sinks": [
-				{
-					"dataset": {
-						"referenceName": "tb_test",
-						"type": "DatasetReference"
-					},
-					"name": "store"
-				}
-			],
+			"sinks": [],
 			"transformations": [],
-			"script": "source(output(\n\t\t{Region ID} as string,\n\t\t{Region Desc} as string,\n\t\t{Detalle region} as string\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: true,\n\tlimit: 100,\n\tignoreNoFilesFound: false) ~> extractData\nextractData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tidModo as integer,\n\t\tDesc as string,\n\t\tIdTipoEnvio as integer\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> store"
+			"script": "source(output(\n\t\t{Producto ID} as string,\n\t\t{Numero Producto} as string,\n\t\t{Producto Sub Categoria ID} as string,\n\t\t{Nombre Producto} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1"
 		}
 	}
 }
