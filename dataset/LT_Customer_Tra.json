@@ -13,7 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "LT_customer.json",
+				"fileName": "LT_customer.csv",
 				"container": "transform"
 			},
 			"columnDelimiter": ",",
