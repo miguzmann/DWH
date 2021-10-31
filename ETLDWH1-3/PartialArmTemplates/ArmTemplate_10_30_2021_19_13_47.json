@@ -1,0 +1,362 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ETLDWH1-3"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Main')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "PP_Metas",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "TipoDeEnvioTransform",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Target_Workflow",
+								"type": "DataFlowReference"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Coarse"
+						}
+					},
+					{
+						"name": "ETL_Products",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "PP_Metas",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Product_workflow",
+								"type": "DataFlowReference"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine",
+							"runConcurrently": true,
+							"continueOnError": true
+						}
+					},
+					{
+						"name": "ModoDeEnvioTransform",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "XmlSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "XmlReadSettings",
+									"validationMode": "none",
+									"namespaces": true
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "[['@id_modo']"
+										},
+										"sink": {
+											"path": "idModo"
+										}
+									},
+									{
+										"source": {
+											"path": "[['@Descripcion']"
+										},
+										"sink": {
+											"path": "Desc"
+										}
+									},
+									{
+										"source": {
+											"path": "[['@Tipo_x0020_ID']"
+										},
+										"sink": {
+											"path": "IdTipoEnvio"
+										}
+									}
+								],
+								"collectionReference": "$['Data']['table_maestria.tb_modo_envio']['maestria.tb_modo_envio']"
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "tb_modo_envio",
+								"type": "DatasetReference",
+								"parameters": {
+									"id_modo": "id_modo",
+									"Descripcion": "Descripcion",
+									"Tipo_x0020_ID": "Descripcion"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "tb_Modo_Envio_Tra",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "TipoDeEnvioTransform",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "ModoDeEnvioTransform",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "XmlSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "XmlReadSettings",
+									"validationMode": "none",
+									"namespaces": true
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "[['@id_tipo']"
+										},
+										"sink": {
+											"path": "idTipoEnvio"
+										}
+									},
+									{
+										"source": {
+											"path": "[['@Descripción']"
+										},
+										"sink": {
+											"path": "descTipoEnvio"
+										}
+									}
+								],
+								"collectionReference": "$['Data']['table_maestria.tb_tipo_envio']['maestria.tb_tipo_envio']"
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "tb_tipo_envio",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "tb_tipo_envio_Tra",
+								"type": "DatasetReference"
+							}
+						]
+					}
+				],
+				"folder": {
+					"name": "ETL"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-10-23T04:18:45Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Tests')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "LT_customer",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Tb_Prueba",
+								"type": "DatasetReference"
+							}
+						]
+					}
+				],
+				"folder": {
+					"name": "ETL"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-10-23T04:50:24Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Tb_Prueba')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Tb_Prueba')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BankMarketBlob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketTransform"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Tb_Prueba.json",
+						"container": "transform"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"idModo": {
+							"type": "integer"
+						},
+						"Desc": {
+							"type": "string"
+						},
+						"IdTipoEnvio": {
+							"type": "integer"
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

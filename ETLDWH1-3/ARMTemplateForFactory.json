@@ -281,7 +281,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "ETL_Metas"
+					"name": "ETL"
 				},
 				"annotations": [],
 				"lastPublishTime": "2021-10-23T04:18:45Z"
@@ -302,11 +302,11 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
+						"name": "Copy data1",
+						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "1.00:00:00",
+							"timeout": "7.00:00:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -314,24 +314,42 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"dataflow": {
-								"referenceName": "Product_workflow",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"ExtLTProduct": {},
-									"ExtLTProductSubcategory": {},
-									"ExtLTCategory": {},
-									"AlmacenarProducto": {}
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
 								}
 							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
 							},
-							"traceLevel": "Fine"
-						}
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "LT_customer",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Tb_Prueba",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
 				"policy": {
@@ -339,13 +357,14 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "ETL_Metas"
+					"name": "ETL"
 				},
 				"annotations": [],
 				"lastPublishTime": "2021-10-23T04:50:24Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Product_workflow')]"
+				"[concat(variables('factoryId'), '/datasets/LT_customer')]",
+				"[concat(variables('factoryId'), '/datasets/Tb_Prueba')]"
 			]
 		},
 		{
@@ -1346,6 +1365,46 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/db_target_region')]",
 				"[concat(variables('factoryId'), '/datasets/DimMetas')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Tb_Prueba')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BankMarketBlob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketTransform"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Tb_Prueba.json",
+						"container": "transform"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"idModo": {
+							"type": "integer"
+						},
+						"Desc": {
+							"type": "string"
+						},
+						"IdTipoEnvio": {
+							"type": "integer"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
 			]
 		}
 	]
