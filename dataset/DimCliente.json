@@ -12,7 +12,7 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "Codigo",
+				"name": "PK_Cliente",
 				"type": "int",
 				"precision": 10
 			},

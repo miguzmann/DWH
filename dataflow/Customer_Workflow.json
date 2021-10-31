@@ -17,13 +17,6 @@
 						"type": "DatasetReference"
 					},
 					"name": "ExtLTCustomerlocation"
-				},
-				{
-					"dataset": {
-						"referenceName": "Regiones",
-						"type": "DatasetReference"
-					},
-					"name": "RegionCustomer"
 				}
 			],
 			"sinks": [
@@ -41,12 +34,9 @@
 				},
 				{
 					"name": "JoinCustomerlocation"
-				},
-				{
-					"name": "JoinCustomerRegion"
 				}
 			],
-			"script": "source(output(\n\t\t{Cliente ID} as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'documentPerLine') ~> ExtLTCustomer\nsource(output(\n\t\t{Cliente ID} as string,\n\t\tPais as string,\n\t\tCiudad as string,\n\t\tEstado as string,\n\t\t{Codigo Postal} as string,\n\t\tRegion as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ExtLTCustomerlocation\nsource(output(\n\t\t{Region ID} as string,\n\t\t{Region Desc} as string,\n\t\t{Detalle region} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> RegionCustomer\nExtLTCustomer keyGenerate(output(PK_Cliente as long),\n\tstartAt: 1L) ~> SurrogateKeyCliente\nSurrogateKeyCliente, ExtLTCustomerlocation join(ExtLTCustomer@{Cliente ID} == ExtLTCustomerlocation@{Cliente ID},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinCustomerlocation\nJoinCustomerlocation, RegionCustomer join(Region == {Region ID},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinCustomerRegion\nJoinCustomerRegion sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tCodigo as integer,\n\t\tCliente_ID as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string,\n\t\tPais as string,\n\t\tCiudad as string,\n\t\tEstado as string,\n\t\tRegion as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tCodigo = PK_Cliente,\n\t\tCliente_ID = ExtLTCustomer@{Cliente ID},\n\t\tNombre,\n\t\tApellido,\n\t\tSegmento,\n\t\tPais,\n\t\tCiudad,\n\t\tEstado,\n\t\tRegion\n\t)) ~> AlmacenarCliente"
+			"script": "source(output(\n\t\t{Cliente ID} as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'documentPerLine') ~> ExtLTCustomer\nsource(output(\n\t\t{Cliente ID} as string,\n\t\tPais as string,\n\t\tCiudad as string,\n\t\tEstado as string,\n\t\t{Codigo Postal} as string,\n\t\tRegion as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ExtLTCustomerlocation\nExtLTCustomer keyGenerate(output(PK_Cliente as long),\n\tstartAt: 1L) ~> SurrogateKeyCliente\nSurrogateKeyCliente, ExtLTCustomerlocation join(ExtLTCustomer@{Cliente ID} == ExtLTCustomerlocation@{Cliente ID},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinCustomerlocation\nJoinCustomerlocation sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tPK_Cliente as integer,\n\t\tCliente_ID as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string,\n\t\tPais as string,\n\t\tCiudad as string,\n\t\tEstado as string,\n\t\tRegion as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tCodigo = PK_Cliente,\n\t\tCliente_ID = ExtLTCustomer@{Cliente ID},\n\t\tNombre,\n\t\tApellido,\n\t\tSegmento,\n\t\tPais,\n\t\tCiudad,\n\t\tEstado,\n\t\tRegion\n\t)) ~> AlmacenarCliente"
 		}
 	}
 }
