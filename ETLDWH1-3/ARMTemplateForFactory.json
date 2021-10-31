@@ -68,47 +68,6 @@
 						}
 					},
 					{
-						"name": "ETL_Products",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "PP_Metas",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "1.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "Product_workflow",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"ExtLTProduct": {},
-									"ExtLTProductSubcategory": {},
-									"ExtLTCategory": {},
-									"AlmacenarProducto": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine",
-							"runConcurrently": true,
-							"continueOnError": true
-						}
-					},
-					{
 						"name": "ModoDeEnvioTransform",
 						"type": "Copy",
 						"dependsOn": [],
@@ -288,7 +247,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/Target_Workflow')]",
-				"[concat(variables('factoryId'), '/dataflows/Product_workflow')]",
 				"[concat(variables('factoryId'), '/datasets/tb_modo_envio')]",
 				"[concat(variables('factoryId'), '/datasets/tb_Modo_Envio_Tra')]",
 				"[concat(variables('factoryId'), '/datasets/tb_tipo_envio')]",
@@ -319,8 +277,8 @@
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"extractData": {},
-									"store": {}
+									"source1": {},
+									"sink1": {}
 								}
 							},
 							"staging": {},
@@ -1330,10 +1288,10 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "LT_customer",
+								"referenceName": "LT_productos",
 								"type": "DatasetReference"
 							},
-							"name": "extractData"
+							"name": "source1"
 						}
 					],
 					"sinks": [
@@ -1342,15 +1300,15 @@
 								"referenceName": "tb_test",
 								"type": "DatasetReference"
 							},
-							"name": "store"
+							"name": "sink1"
 						}
 					],
 					"transformations": [],
-					"script": "source(output(\n\t\t{Cliente ID} as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: true,\n\tlimit: 100,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'documentPerLine') ~> extractData\nextractData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tidModo as integer,\n\t\tDesc as string,\n\t\tIdTipoEnvio as integer\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> store"
+					"script": "source(output(\n\t\t{Producto ID} as string,\n\t\t{Numero Producto} as string,\n\t\t{Producto Sub Categoria ID} as string,\n\t\t{Nombre Producto} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tidModo as integer,\n\t\tDesc as string,\n\t\tIdTipoEnvio as integer\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/LT_customer')]",
+				"[concat(variables('factoryId'), '/datasets/LT_productos')]",
 				"[concat(variables('factoryId'), '/datasets/tb_test')]"
 			]
 		}
