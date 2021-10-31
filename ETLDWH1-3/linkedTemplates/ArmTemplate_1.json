@@ -13,37 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/Customer_Workflow')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "LT_customer",
-								"type": "DatasetReference"
-							},
-							"name": "PruebaExtraccion1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "test",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [],
-					"script": "source(output(\n\t\t{Cliente ID} as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tlimit: 100,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'documentPerLine') ~> PruebaExtraccion1\nPruebaExtraccion1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tidModo as integer,\n\t\tDesc as string,\n\t\tIdTipoEnvio as integer\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Product_workflow')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -129,6 +98,37 @@
 						}
 					],
 					"script": "source(output(\n\t\t{Año} as integer,\n\t\tMes as integer,\n\t\t{Region ID} as integer,\n\t\tTarget as decimal(18,5)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtTargetTable\nExtTargetTable keyGenerate(output(PK_Metas as long),\n\tstartAt: 1L) ~> AgregarSurrogateKey\nAgregarSurrogateKey sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tPK_Meta as integer,\n\t\t{Año} as integer,\n\t\tMes as integer,\n\t\tRegion_ID as integer,\n\t\tTARGET as decimal(18,5)\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tpreSQLs:['Truncate Table DIM_Metas'],\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPK_Meta = PK_Metas,\n\t\t{Año},\n\t\tMes,\n\t\tRegion_ID = {Region ID},\n\t\tTARGET = Target\n\t)) ~> AlmacenarMetasDWH"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Custormer_workflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "LT_customer",
+								"type": "DatasetReference"
+							},
+							"name": "extractData"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "test",
+								"type": "DatasetReference"
+							},
+							"name": "store"
+						}
+					],
+					"transformations": [],
+					"script": "source(output(\n\t\t{Cliente ID} as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'documentPerLine') ~> extractData\nextractData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tidModo as integer,\n\t\tDesc as string,\n\t\tIdTipoEnvio as integer\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> store"
 				}
 			},
 			"dependsOn": []
@@ -420,12 +420,12 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "Customer_Workflow",
+								"referenceName": "Custormer_workflow",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"PruebaExtraccion1": {},
-									"sink1": {}
+									"extractData": {},
+									"store": {}
 								}
 							},
 							"staging": {},
@@ -448,7 +448,7 @@
 				"lastPublishTime": "2021-10-23T04:50:24Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Customer_Workflow')]"
+				"[concat(variables('factoryId'), '/dataflows/Custormer_workflow')]"
 			]
 		}
 	]
