@@ -393,8 +393,8 @@
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"ExtLTCustomer": {},
 									"ExtLTCustomerlocation": {},
+									"ExtractCustomer": {},
 									"AlmacenarCliente": {}
 								}
 							},
