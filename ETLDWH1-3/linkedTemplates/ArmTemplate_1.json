@@ -13,6 +13,37 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/Customer_Workflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "LT_customer",
+								"type": "DatasetReference"
+							},
+							"name": "ExtractCustomer"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "test",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [],
+					"script": "source(output(\n\t\t{Cliente ID} as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tlimit: 100,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'documentPerLine') ~> ExtractCustomer\nExtractCustomer sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tidModo as integer,\n\t\tDesc as string,\n\t\tIdTipoEnvio as integer\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Product_workflow')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -393,9 +424,8 @@
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"ExtLTCustomerlocation": {},
 									"ExtractCustomer": {},
-									"AlmacenarCliente": {}
+									"sink1": {}
 								}
 							},
 							"staging": {},
@@ -417,7 +447,9 @@
 				"annotations": [],
 				"lastPublishTime": "2021-10-23T04:50:24Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/Customer_Workflow')]"
+			]
 		}
 	]
 }
