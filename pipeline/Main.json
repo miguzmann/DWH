@@ -139,6 +139,17 @@
 							"namespaces": true
 						}
 					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
@@ -166,6 +177,12 @@
 				"inputs": [
 					{
 						"referenceName": "tb_tipo_envio",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "tb_tipo_envio_Tra",
 						"type": "DatasetReference"
 					}
 				]
