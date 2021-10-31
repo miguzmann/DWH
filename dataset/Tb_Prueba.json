@@ -1,0 +1,35 @@
+{
+	"name": "Tb_Prueba",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BankMarketBlob",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "BankMarketTransform"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Tb_Prueba.json",
+				"container": "transform"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"idModo": {
+					"type": "integer"
+				},
+				"Desc": {
+					"type": "string"
+				},
+				"IdTipoEnvio": {
+					"type": "integer"
+				}
+			}
+		}
+	}
+}
