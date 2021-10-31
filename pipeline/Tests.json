@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "Customer_Workflow",
+						"referenceName": "Custormer_workflow",
 						"type": "DataFlowReference"
 					},
 					"compute": {

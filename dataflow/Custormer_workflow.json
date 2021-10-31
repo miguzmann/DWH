@@ -3,10 +3,26 @@
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
-			"sources": [],
-			"sinks": [],
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "LT_customer",
+						"type": "DatasetReference"
+					},
+					"name": "extractData"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "test",
+						"type": "DatasetReference"
+					},
+					"name": "store"
+				}
+			],
 			"transformations": [],
-			"script": ""
+			"script": "source(output(\n\t\t{Cliente ID} as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'documentPerLine') ~> extractData\nextractData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tidModo as integer,\n\t\tDesc as string,\n\t\tIdTipoEnvio as integer\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> store"
 		}
 	}
 }
