@@ -23,19 +23,19 @@
 		},
 		"schema": [
 			{
-				"name": "{\"Cliente ID\":\"CG-12520\"",
+				"name": "Cliente ID",
 				"type": "String"
 			},
 			{
-				"name": "\"Nombre\":\"Claire\"",
+				"name": "Nombre",
 				"type": "String"
 			},
 			{
-				"name": "\"Apellido\":\"Gute\"",
+				"name": "Apellido",
 				"type": "String"
 			},
 			{
-				"name": "\"Segmento\":\"Consumer\"}",
+				"name": "Segmento",
 				"type": "String"
 			}
 		]
