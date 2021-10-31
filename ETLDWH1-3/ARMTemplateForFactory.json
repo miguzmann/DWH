@@ -302,11 +302,11 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
+						"name": "Copy data1",
+						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "1.00:00:00",
+							"timeout": "7.00:00:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -314,22 +314,42 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"dataflow": {
-								"referenceName": "Custormer_workflow",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"extractData": {},
-									"store": {}
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
 								}
 							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
 							},
-							"traceLevel": "Coarse"
-						}
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "LT_customer",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "test",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
 				"policy": {
@@ -343,7 +363,8 @@
 				"lastPublishTime": "2021-10-23T04:50:24Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Custormer_workflow')]"
+				"[concat(variables('factoryId'), '/datasets/LT_customer')]",
+				"[concat(variables('factoryId'), '/datasets/test')]"
 			]
 		},
 		{
