@@ -13,7 +13,7 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/LT_Customer_Tra')]",
+			"name": "[concat(parameters('factoryName'), '/tb_tipo_envio_Tra')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -29,7 +29,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "LT_customer.csv",
+						"fileName": "tb_tipo_envio_Tra.csv",
 						"container": "transform"
 					},
 					"columnDelimiter": ",",
@@ -39,19 +39,11 @@
 				},
 				"schema": [
 					{
-						"name": "Cliente ID",
+						"name": "{\"idTipoEnvio\":1",
 						"type": "String"
 					},
 					{
-						"name": "Nombre",
-						"type": "String"
-					},
-					{
-						"name": "Apellido",
-						"type": "String"
-					},
-					{
-						"name": "Segmento",
+						"name": "\"descTipoEnvio\":\"Tecnologico\"}",
 						"type": "String"
 					}
 				]
@@ -194,9 +186,7 @@
 					"script": "source(output(\n\t\t{Cliente ID} as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> TransformedCustomer\nsource(output(\n\t\t{Cliente ID} as string,\n\t\tPais as string,\n\t\tCiudad as string,\n\t\tEstado as string,\n\t\t{Codigo Postal} as string,\n\t\tRegion as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ExtratedCustomer\nTransformedCustomer, ExtratedCustomer join(TransformedCustomer@{Cliente ID} == ExtratedCustomer@{Cliente ID},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join1\nJoin1 select(mapColumn(\n\t\t{Cliente ID} = TransformedCustomer@{Cliente ID},\n\t\tNombre,\n\t\tApellido,\n\t\tSegmento,\n\t\tPais,\n\t\tCiudad,\n\t\tEstado,\n\t\t{Codigo Postal},\n\t\tRegion\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DataToStore\nDataToStore keyGenerate(output(Pk_Cliente as long),\n\tstartAt: 1L) ~> SurrogateKeyCliente\nSurrogateKeyCliente sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tPK_Cliente as integer,\n\t\tCliente_ID as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string,\n\t\tPais as string,\n\t\tCiudad as string,\n\t\tEstado as string,\n\t\tRegion as string,\n\t\t{Codigo Postal} as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPK_Cliente = Pk_Cliente,\n\t\tCliente_ID = {Cliente ID},\n\t\tNombre,\n\t\tApellido,\n\t\tSegmento,\n\t\tPais,\n\t\tCiudad,\n\t\tEstado,\n\t\tRegion,\n\t\t{Codigo Postal}\n\t)) ~> StoreDWHCustomer"
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/LT_Customer_Tra')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Main')]",
@@ -207,14 +197,7 @@
 					{
 						"name": "PP_Metas",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "TipoDeEnvioTransform",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "1.00:00:00",
 							"retry": 0,
@@ -268,12 +251,14 @@
 								}
 							},
 							"sink": {
-								"type": "JsonSink",
+								"type": "DelimitedTextSink",
 								"storeSettings": {
 									"type": "AzureBlobStorageWriteSettings"
 								},
 								"formatSettings": {
-									"type": "JsonWriteSettings"
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
 								}
 							},
 							"enableStaging": false,
@@ -330,14 +315,7 @@
 					{
 						"name": "TipoDeEnvioTransform",
 						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "ModoDeEnvioTransform",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -361,12 +339,14 @@
 								}
 							},
 							"sink": {
-								"type": "JsonSink",
+								"type": "DelimitedTextSink",
 								"storeSettings": {
 									"type": "AzureBlobStorageWriteSettings"
 								},
 								"formatSettings": {
-									"type": "JsonWriteSettings"
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
 								}
 							},
 							"enableStaging": false,
@@ -420,7 +400,8 @@
 				"lastPublishTime": "2021-10-23T04:18:45Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Target_Workflow')]"
+				"[concat(variables('factoryId'), '/dataflows/Target_Workflow')]",
+				"[concat(variables('factoryId'), '/datasets/tb_tipo_envio_Tra')]"
 			]
 		},
 		{
@@ -568,7 +549,6 @@
 				"lastPublishTime": "2021-10-23T04:50:24Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/LT_Customer_Tra')]",
 				"[concat(variables('factoryId'), '/dataflows/Custormer_workflow')]"
 			]
 		}

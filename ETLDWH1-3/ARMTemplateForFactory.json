@@ -33,14 +33,7 @@
 					{
 						"name": "PP_Metas",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "TipoDeEnvioTransform",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "1.00:00:00",
 							"retry": 0,
@@ -94,12 +87,14 @@
 								}
 							},
 							"sink": {
-								"type": "JsonSink",
+								"type": "DelimitedTextSink",
 								"storeSettings": {
 									"type": "AzureBlobStorageWriteSettings"
 								},
 								"formatSettings": {
-									"type": "JsonWriteSettings"
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
 								}
 							},
 							"enableStaging": false,
@@ -156,14 +151,7 @@
 					{
 						"name": "TipoDeEnvioTransform",
 						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "ModoDeEnvioTransform",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "7.00:00:00",
 							"retry": 0,
@@ -187,12 +175,14 @@
 								}
 							},
 							"sink": {
-								"type": "JsonSink",
+								"type": "DelimitedTextSink",
 								"storeSettings": {
 									"type": "AzureBlobStorageWriteSettings"
 								},
 								"formatSettings": {
-									"type": "JsonWriteSettings"
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
 								}
 							},
 							"enableStaging": false,
@@ -757,7 +747,7 @@
 						"fileName": "LT_customer.json",
 						"container": "files"
 					},
-					"encodingName": "UTF-8"
+					"encodingName": "ISO-8859-1"
 				},
 				"schema": {
 					"type": "object",
@@ -1065,46 +1055,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/tb_Modo_Envio_Tra')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BankMarketBlob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "BankMarketTransform"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "tb_Modo_Envio_Tra.json",
-						"container": "transform"
-					}
-				},
-				"schema": {
-					"type": "object",
-					"properties": {
-						"idModo": {
-							"type": "integer"
-						},
-						"Desc": {
-							"type": "string"
-						},
-						"IdTipoEnvio": {
-							"type": "integer"
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/tb_modo_envio')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1160,43 +1110,6 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "tb_tipo_envio.xml",
 						"container": "files"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tb_tipo_envio_Tra')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BankMarketBlob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "BankMarketTransform"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "tb_tipo_envio_Tra.json",
-						"container": "transform"
-					}
-				},
-				"schema": {
-					"type": "object",
-					"properties": {
-						"idTipoEnvio": {
-							"type": "integer"
-						},
-						"descTipoEnvio": {
-							"type": "string"
-						}
 					}
 				}
 			},
@@ -1454,6 +1367,7 @@
 						"container": "transform"
 					},
 					"columnDelimiter": ",",
+					"encodingName": "ISO-8859-1",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
@@ -1473,6 +1387,90 @@
 					},
 					{
 						"name": "Segmento",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tb_Modo_Envio_Tra')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BankMarketBlob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketTransform"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "tb_Modo_Envio_Tra.csv",
+						"container": "transform"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "{\"idModo\":0",
+						"type": "String"
+					},
+					{
+						"name": "\"Desc\":\"Envío e-mail\"",
+						"type": "String"
+					},
+					{
+						"name": "\"IdTipoEnvio\":1}",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tb_tipo_envio_Tra')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BankMarketBlob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketTransform"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "tb_tipo_envio_Tra.csv",
+						"container": "transform"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "{\"idTipoEnvio\":1",
+						"type": "String"
+					},
+					{
+						"name": "\"descTipoEnvio\":\"Tecnologico\"}",
 						"type": "String"
 					}
 				]
