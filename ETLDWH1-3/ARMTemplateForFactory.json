@@ -714,7 +714,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "Clientes.csv",
+						"fileName": "LT_customer.json",
 						"container": "files"
 					},
 					"encodingName": "UTF-8"
@@ -913,6 +913,46 @@
 						"type": "String"
 					}
 				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Tb_Prueba')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BankMarketBlob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketTransform"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Tb_Prueba.json",
+						"container": "transform"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"idModo": {
+							"type": "integer"
+						},
+						"Desc": {
+							"type": "string"
+						},
+						"IdTipoEnvio": {
+							"type": "integer"
+						}
+					}
+				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
@@ -1365,46 +1405,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/db_target_region')]",
 				"[concat(variables('factoryId'), '/datasets/DimMetas')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Tb_Prueba')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BankMarketBlob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "BankMarketTransform"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "Tb_Prueba.json",
-						"container": "transform"
-					}
-				},
-				"schema": {
-					"type": "object",
-					"properties": {
-						"idModo": {
-							"type": "integer"
-						},
-						"Desc": {
-							"type": "string"
-						},
-						"IdTipoEnvio": {
-							"type": "integer"
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
 			]
 		}
 	]
