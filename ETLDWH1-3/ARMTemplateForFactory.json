@@ -223,32 +223,7 @@
 								"parameters": {}
 							}
 						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "ETL"
-				},
-				"annotations": [],
-				"lastPublishTime": "2021-10-23T04:18:45Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Target_Workflow')]",
-				"[concat(variables('factoryId'), '/datasets/tb_modo_envio')]",
-				"[concat(variables('factoryId'), '/datasets/tb_Modo_Envio_Tra')]",
-				"[concat(variables('factoryId'), '/datasets/tb_tipo_envio')]",
-				"[concat(variables('factoryId'), '/datasets/tb_tipo_envio_Tra')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Tests')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
+					},
 					{
 						"name": "StagginCustomerData",
 						"type": "Copy",
@@ -385,12 +360,70 @@
 					"name": "ETL"
 				},
 				"annotations": [],
-				"lastPublishTime": "2021-10-23T04:50:24Z"
+				"lastPublishTime": "2021-10-23T04:18:45Z"
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/Target_Workflow')]",
+				"[concat(variables('factoryId'), '/datasets/tb_modo_envio')]",
+				"[concat(variables('factoryId'), '/datasets/tb_Modo_Envio_Tra')]",
+				"[concat(variables('factoryId'), '/datasets/tb_tipo_envio')]",
+				"[concat(variables('factoryId'), '/datasets/tb_tipo_envio_Tra')]",
 				"[concat(variables('factoryId'), '/datasets/LT_customer')]",
 				"[concat(variables('factoryId'), '/datasets/LT_Customer_Tra')]",
 				"[concat(variables('factoryId'), '/dataflows/Custormer_workflow')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Tests')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Product_workflow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"ExtLTProduct": {},
+									"ExtLTProductSubcategory": {},
+									"ExtLTCategory": {},
+									"AlmacenarProducto": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "ETL"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-10-23T04:50:24Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/Product_workflow')]"
 			]
 		},
 		{
@@ -1429,9 +1462,12 @@
 						},
 						{
 							"name": "JoinCategory"
+						},
+						{
+							"name": "Select1"
 						}
 					],
-					"script": "source(output(\n\t\t{Producto ID} as string,\n\t\t{Numero Producto} as string,\n\t\t{Producto Sub Categoria ID} as string,\n\t\t{Nombre Producto} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTProduct\nsource(output(\n\t\t{Subcategoria Producto ID} as string,\n\t\t{Categoria Producto ID} as string,\n\t\t{Descripcion Subcategoria} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTProductSubcategory\nsource(output(\n\t\t{Categoria Producto ID} as string,\n\t\t{Descripcion Categoria} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTCategory\nExtLTProduct, ExtLTProductSubcategory join({Producto Sub Categoria ID} == {Subcategoria Producto ID},\n\tjoinType:'right',\n\tbroadcast: 'auto')~> JoinSubcategory\nJoinSubcategory keyGenerate(output(PK_Product as long),\n\tstartAt: 1L) ~> SurrogateKeyProduct\nSurrogateKeyProduct, ExtLTCategory join(ExtLTProductSubcategory@{Categoria Producto ID} == ExtLTCategory@{Categoria Producto ID},\n\tjoinType:'right',\n\tbroadcast: 'both')~> JoinCategory\nJoinCategory sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tProducto_ID as integer,\n\t\tCategoria_Producto_ID as string,\n\t\tDescripcion_Subcategoria as string,\n\t\tNumero_Producto as string,\n\t\tCategoria_ID as string,\n\t\tNombre_Producto as string,\n\t\tCategoria_Producto_ID_1 as string,\n\t\tDescripcion_Categoria as string,\n\t\tSubcategoria_ID as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tProducto_ID = PK_Product,\n\t\tCategoria_Producto_ID = ExtLTCategory@{Categoria Producto ID},\n\t\tDescripcion_Subcategoria = {Descripcion Subcategoria},\n\t\tNumero_Producto = {Numero Producto},\n\t\tCategoria_ID = ExtLTCategory@{Categoria Producto ID},\n\t\tNombre_Producto = {Nombre Producto},\n\t\tCategoria_Producto_ID_1 = ExtLTCategory@{Categoria Producto ID},\n\t\tDescripcion_Categoria = {Descripcion Categoria},\n\t\tSubcategoria_ID = {Subcategoria Producto ID}\n\t)) ~> AlmacenarProducto"
+					"script": "source(output(\n\t\t{Producto ID} as string,\n\t\t{Numero Producto} as string,\n\t\t{Producto Sub Categoria ID} as string,\n\t\t{Nombre Producto} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTProduct\nsource(output(\n\t\t{Subcategoria Producto ID} as string,\n\t\t{Categoria Producto ID} as string,\n\t\t{Descripcion Subcategoria} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTProductSubcategory\nsource(output(\n\t\t{Categoria Producto ID} as string,\n\t\t{Descripcion Categoria} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTCategory\nExtLTProduct, ExtLTProductSubcategory join({Producto Sub Categoria ID} == {Subcategoria Producto ID},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinSubcategory\nJoinSubcategory keyGenerate(output(PK_Product as long),\n\tstartAt: 1L) ~> SurrogateKeyProduct\nSurrogateKeyProduct, ExtLTCategory join(ExtLTProductSubcategory@{Categoria Producto ID} == ExtLTCategory@{Categoria Producto ID},\n\tjoinType:'left',\n\tbroadcast: 'both')~> JoinCategory\nJoinCategory select(mapColumn(\n\t\t{Producto ID},\n\t\t{Numero Producto},\n\t\t{Producto Sub Categoria ID},\n\t\t{Nombre Producto},\n\t\t{Subcategoria Producto ID},\n\t\t{Categoria Producto ID} = ExtLTProductSubcategory@{Categoria Producto ID},\n\t\t{Descripcion Subcategoria},\n\t\tPK_Product,\n\t\t{Descripcion Categoria}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tProducto_ID as integer,\n\t\tCategoria_Producto_ID as string,\n\t\tDescripcion_Subcategoria as string,\n\t\tNumero_Producto as string,\n\t\tCategoria_ID as string,\n\t\tNombre_Producto as string,\n\t\tCategoria_Producto_ID_1 as string,\n\t\tDescripcion_Categoria as string,\n\t\tSubcategoria_ID as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tProducto_ID = PK_Product,\n\t\tCategoria_Producto_ID = ExtLTCategory@{Categoria Producto ID},\n\t\tDescripcion_Subcategoria = {Descripcion Subcategoria},\n\t\tNumero_Producto = {Numero Producto},\n\t\tCategoria_ID = ExtLTCategory@{Categoria Producto ID},\n\t\tNombre_Producto = {Nombre Producto},\n\t\tCategoria_Producto_ID_1 = ExtLTCategory@{Categoria Producto ID},\n\t\tDescripcion_Categoria = {Descripcion Categoria},\n\t\tSubcategoria_ID = {Subcategoria Producto ID}\n\t)) ~> AlmacenarProducto"
 				}
 			},
 			"dependsOn": [
