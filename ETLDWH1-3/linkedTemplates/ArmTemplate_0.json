@@ -398,6 +398,55 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/LT_Customer_Tra')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BankMarketBlob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketTransform"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "LT_customer.csv",
+						"container": "transform"
+					},
+					"columnDelimiter": ",",
+					"encodingName": "ISO-8859-1",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Cliente ID",
+						"type": "String"
+					},
+					{
+						"name": "Nombre",
+						"type": "String"
+					},
+					{
+						"name": "Apellido",
+						"type": "String"
+					},
+					{
+						"name": "Segmento",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/LT_customer')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -725,6 +774,50 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/tb_Modo_Envio_Tra')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BankMarketBlob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketTransform"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "tb_Modo_Envio_Tra.csv",
+						"container": "transform"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "{\"idModo\":0",
+						"type": "String"
+					},
+					{
+						"name": "\"Desc\":\"Envío e-mail\"",
+						"type": "String"
+					},
+					{
+						"name": "\"IdTipoEnvio\":1}",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/tb_modo_envio')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -753,32 +846,6 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": "tb_modo_envio.xml",
-						"container": "files"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tb_tipo_envio')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BankMarketBlob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "BankMarketSource"
-				},
-				"annotations": [],
-				"type": "Xml",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "tb_tipo_envio.xml",
 						"container": "files"
 					}
 				}
@@ -828,7 +895,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/LT_Customer_Tra')]",
+			"name": "[concat(parameters('factoryName'), '/tb_tipo_envio')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -837,84 +904,17 @@
 					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "BankMarketTransform"
+					"name": "BankMarketSource"
 				},
 				"annotations": [],
-				"type": "DelimitedText",
+				"type": "Xml",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "LT_customer.csv",
-						"container": "transform"
-					},
-					"columnDelimiter": ",",
-					"encodingName": "ISO-8859-1",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "Cliente ID",
-						"type": "String"
-					},
-					{
-						"name": "Nombre",
-						"type": "String"
-					},
-					{
-						"name": "Apellido",
-						"type": "String"
-					},
-					{
-						"name": "Segmento",
-						"type": "String"
+						"fileName": "tb_tipo_envio.xml",
+						"container": "files"
 					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tb_Modo_Envio_Tra')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BankMarketBlob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "BankMarketTransform"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "tb_Modo_Envio_Tra.csv",
-						"container": "transform"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "{\"idModo\":0",
-						"type": "String"
-					},
-					{
-						"name": "\"Desc\":\"Envío e-mail\"",
-						"type": "String"
-					},
-					{
-						"name": "\"IdTipoEnvio\":1}",
-						"type": "String"
-					}
-				]
+				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
