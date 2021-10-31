@@ -16,7 +16,7 @@
 				"fileName": "LT_customer.json",
 				"container": "files"
 			},
-			"encodingName": "UTF-8"
+			"encodingName": "ISO-8859-1"
 		},
 		"schema": {
 			"type": "object",
