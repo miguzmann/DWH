@@ -328,7 +328,7 @@
 								"coreCount": 8,
 								"computeType": "General"
 							},
-							"traceLevel": "Fine"
+							"traceLevel": "Coarse"
 						}
 					}
 				],
@@ -1027,17 +1027,14 @@
 				"schema": {
 					"type": "object",
 					"properties": {
-						"Cliente ID": {
+						"idModo": {
+							"type": "integer"
+						},
+						"Desc": {
 							"type": "string"
 						},
-						"Nombre": {
-							"type": "string"
-						},
-						"Apellido": {
-							"type": "string"
-						},
-						"Segmento": {
-							"type": "string"
+						"IdTipoEnvio": {
+							"type": "integer"
 						}
 					}
 				}
@@ -1133,14 +1130,11 @@
 				"schema": {
 					"type": "object",
 					"properties": {
-						"idModo": {
+						"idTipoEnvio": {
 							"type": "integer"
 						},
-						"Desc": {
+						"descTipoEnvio": {
 							"type": "string"
-						},
-						"IdTipoEnvio": {
-							"type": "integer"
 						}
 					}
 				}
@@ -1352,7 +1346,7 @@
 						}
 					],
 					"transformations": [],
-					"script": "source(output(\n\t\t{Cliente ID} as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'documentPerLine') ~> extractData\nextractData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tidModo as integer,\n\t\tDesc as string,\n\t\tIdTipoEnvio as integer\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> store"
+					"script": "source(output(\n\t\t{Cliente ID} as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: true,\n\tlimit: 100,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'documentPerLine') ~> extractData\nextractData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tidModo as integer,\n\t\tDesc as string,\n\t\tIdTipoEnvio as integer\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> store"
 				}
 			},
 			"dependsOn": [

@@ -744,17 +744,14 @@
 				"schema": {
 					"type": "object",
 					"properties": {
-						"Cliente ID": {
+						"idModo": {
+							"type": "integer"
+						},
+						"Desc": {
 							"type": "string"
 						},
-						"Nombre": {
-							"type": "string"
-						},
-						"Apellido": {
-							"type": "string"
-						},
-						"Segmento": {
-							"type": "string"
+						"IdTipoEnvio": {
+							"type": "integer"
 						}
 					}
 				}
@@ -850,14 +847,11 @@
 				"schema": {
 					"type": "object",
 					"properties": {
-						"idModo": {
+						"idTipoEnvio": {
 							"type": "integer"
 						},
-						"Desc": {
+						"descTipoEnvio": {
 							"type": "string"
-						},
-						"IdTipoEnvio": {
-							"type": "integer"
 						}
 					}
 				}
