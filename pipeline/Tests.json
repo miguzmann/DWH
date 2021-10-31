@@ -3,103 +3,9 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "StagginCustomerData",
-				"type": "Copy",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "JsonSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "JsonReadSettings"
-						}
-					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"path": "$['Cliente ID']"
-								},
-								"sink": {
-									"name": "Cliente ID"
-								}
-							},
-							{
-								"source": {
-									"path": "$['Nombre']"
-								},
-								"sink": {
-									"name": "Nombre"
-								}
-							},
-							{
-								"source": {
-									"path": "$['Apellido']"
-								},
-								"sink": {
-									"name": "Apellido"
-								}
-							},
-							{
-								"source": {
-									"path": "$['Segmento']"
-								},
-								"sink": {
-									"name": "Segmento"
-								}
-							}
-						]
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "LT_customer",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "LT_Customer_Tra",
-						"type": "DatasetReference"
-					}
-				]
-			},
-			{
-				"name": "PP_Customer",
+				"name": "Data flow1",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "StagginCustomerData",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "1.00:00:00",
 					"retry": 0,
@@ -110,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "Custormer_workflow",
+						"referenceName": "Product_workflow",
 						"type": "DataFlowReference"
 					},
 					"compute": {
