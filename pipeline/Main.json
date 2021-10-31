@@ -5,14 +5,7 @@
 			{
 				"name": "PP_Metas",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "TipoDeEnvioTransform",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "1.00:00:00",
 					"retry": 0,
@@ -60,12 +53,14 @@
 						}
 					},
 					"sink": {
-						"type": "JsonSink",
+						"type": "DelimitedTextSink",
 						"storeSettings": {
 							"type": "AzureBlobStorageWriteSettings"
 						},
 						"formatSettings": {
-							"type": "JsonWriteSettings"
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
 						}
 					},
 					"enableStaging": false,
@@ -121,14 +116,7 @@
 			{
 				"name": "TipoDeEnvioTransform",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "ModoDeEnvioTransform",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,

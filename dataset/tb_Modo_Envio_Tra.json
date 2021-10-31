@@ -1,0 +1,39 @@
+{
+	"name": "tb_Modo_Envio_Tra",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BankMarketBlob",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "BankMarketTransform"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "tb_Modo_Envio_Tra.csv",
+				"container": "transform"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "{\"idModo\":0",
+				"type": "String"
+			},
+			{
+				"name": "\"Desc\":\"Envío e-mail\"",
+				"type": "String"
+			},
+			{
+				"name": "\"IdTipoEnvio\":1}",
+				"type": "String"
+			}
+		]
+	}
+}
