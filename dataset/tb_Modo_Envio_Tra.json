@@ -23,15 +23,15 @@
 		},
 		"schema": [
 			{
-				"name": "{\"idModo\":0",
+				"name": "@id_modo",
 				"type": "String"
 			},
 			{
-				"name": "\"Desc\":\"Envío e-mail\"",
+				"name": "@Descripcion",
 				"type": "String"
 			},
 			{
-				"name": "\"IdTipoEnvio\":1}",
+				"name": "@Tipo_x0020_ID",
 				"type": "String"
 			}
 		]

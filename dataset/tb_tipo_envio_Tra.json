@@ -23,11 +23,11 @@
 		},
 		"schema": [
 			{
-				"name": "{\"idTipoEnvio\":1",
+				"name": "@id_tipo",
 				"type": "String"
 			},
 			{
-				"name": "\"descTipoEnvio\":\"Tecnologico\"}",
+				"name": "@Descripción",
 				"type": "String"
 			}
 		]
