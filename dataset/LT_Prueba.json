@@ -1,5 +1,5 @@
 {
-	"name": "Prueba",
+	"name": "LT_Prueba",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "BankMarketBlob",
