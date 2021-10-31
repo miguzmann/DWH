@@ -350,37 +350,9 @@
 							},
 							"traceLevel": "Fine"
 						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "ETL"
-				},
-				"annotations": [],
-				"lastPublishTime": "2021-10-23T04:18:45Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Target_Workflow')]",
-				"[concat(variables('factoryId'), '/datasets/tb_modo_envio')]",
-				"[concat(variables('factoryId'), '/datasets/tb_Modo_Envio_Tra')]",
-				"[concat(variables('factoryId'), '/datasets/tb_tipo_envio')]",
-				"[concat(variables('factoryId'), '/datasets/tb_tipo_envio_Tra')]",
-				"[concat(variables('factoryId'), '/datasets/LT_customer')]",
-				"[concat(variables('factoryId'), '/datasets/LT_Customer_Tra')]",
-				"[concat(variables('factoryId'), '/dataflows/Custormer_workflow')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Tests')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
+					},
 					{
-						"name": "Data flow1",
+						"name": "PP_Producto",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
@@ -420,10 +392,70 @@
 					"name": "ETL"
 				},
 				"annotations": [],
+				"lastPublishTime": "2021-10-23T04:18:45Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/Target_Workflow')]",
+				"[concat(variables('factoryId'), '/datasets/tb_modo_envio')]",
+				"[concat(variables('factoryId'), '/datasets/tb_Modo_Envio_Tra')]",
+				"[concat(variables('factoryId'), '/datasets/tb_tipo_envio')]",
+				"[concat(variables('factoryId'), '/datasets/tb_tipo_envio_Tra')]",
+				"[concat(variables('factoryId'), '/datasets/LT_customer')]",
+				"[concat(variables('factoryId'), '/datasets/LT_Customer_Tra')]",
+				"[concat(variables('factoryId'), '/dataflows/Custormer_workflow')]",
+				"[concat(variables('factoryId'), '/dataflows/Product_workflow')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Tests')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Custormer_workflow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"TransformedCustomer": {},
+									"ExtratedCustomer": {},
+									"StoreDWHCustomer": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "ETL"
+				},
+				"annotations": [],
 				"lastPublishTime": "2021-10-23T04:50:24Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Product_workflow')]"
+				"[concat(variables('factoryId'), '/dataflows/Custormer_workflow')]"
 			]
 		},
 		{
@@ -1160,15 +1192,15 @@
 				},
 				"schema": [
 					{
-						"name": "{\"idModo\":0",
+						"name": "@id_modo",
 						"type": "String"
 					},
 					{
-						"name": "\"Desc\":\"Envío e-mail\"",
+						"name": "@Descripcion",
 						"type": "String"
 					},
 					{
-						"name": "\"IdTipoEnvio\":1}",
+						"name": "@Tipo_x0020_ID",
 						"type": "String"
 					}
 				]
@@ -1207,46 +1239,6 @@
 						"type": "AzureBlobStorageLocation",
 						"fileName": "tb_modo_envio.xml",
 						"container": "files"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tb_test')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BankMarketBlob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "BankMarketTransform"
-				},
-				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "tb_test.json",
-						"container": "transform"
-					}
-				},
-				"schema": {
-					"type": "object",
-					"properties": {
-						"idModo": {
-							"type": "integer"
-						},
-						"Desc": {
-							"type": "string"
-						},
-						"IdTipoEnvio": {
-							"type": "integer"
-						}
 					}
 				}
 			},
@@ -1307,11 +1299,11 @@
 				},
 				"schema": [
 					{
-						"name": "{\"idTipoEnvio\":1",
+						"name": "@id_tipo",
 						"type": "String"
 					},
 					{
-						"name": "\"descTipoEnvio\":\"Tecnologico\"}",
+						"name": "@Descripción",
 						"type": "String"
 					}
 				]
