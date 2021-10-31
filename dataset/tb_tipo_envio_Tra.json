@@ -20,14 +20,11 @@
 		"schema": {
 			"type": "object",
 			"properties": {
-				"idModo": {
+				"idTipoEnvio": {
 					"type": "integer"
 				},
-				"Desc": {
+				"descTipoEnvio": {
 					"type": "string"
-				},
-				"IdTipoEnvio": {
-					"type": "integer"
 				}
 			}
 		}
