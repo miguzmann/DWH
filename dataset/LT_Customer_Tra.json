@@ -1,0 +1,43 @@
+{
+	"name": "LT_Customer_Tra",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BankMarketBlob",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "BankMarketTransform"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "LT_customer.json",
+				"container": "transform"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "{\"Cliente ID\":\"CG-12520\"",
+				"type": "String"
+			},
+			{
+				"name": "\"Nombre\":\"Claire\"",
+				"type": "String"
+			},
+			{
+				"name": "\"Apellido\":\"Gute\"",
+				"type": "String"
+			},
+			{
+				"name": "\"Segmento\":\"Consumer\"}",
+				"type": "String"
+			}
+		]
+	}
+}
