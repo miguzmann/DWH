@@ -1,0 +1,130 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ETLDWH1-3"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/DimProducto')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ConnectorAzureRafael",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "DWH"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "PK_Producto",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Producto_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Descripcion_Subcategoria",
+						"type": "varchar"
+					},
+					{
+						"name": "Numero_Producto",
+						"type": "varchar"
+					},
+					{
+						"name": "Categoria_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "Nombre_Producto",
+						"type": "varchar"
+					},
+					{
+						"name": "Descripcion_Categoria",
+						"type": "varchar"
+					},
+					{
+						"name": "Subcategoria_ID",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DIM_Producto"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Product_workflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "LT_productos",
+								"type": "DatasetReference"
+							},
+							"name": "ExtLTProduct"
+						},
+						{
+							"dataset": {
+								"referenceName": "LT_productos_sub_categoria",
+								"type": "DatasetReference"
+							},
+							"name": "ExtLTProductSubcategory"
+						},
+						{
+							"dataset": {
+								"referenceName": "LT_productos_categoria",
+								"type": "DatasetReference"
+							},
+							"name": "ExtLTCategory"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DimProducto",
+								"type": "DatasetReference"
+							},
+							"name": "AlmacenarProducto"
+						}
+					],
+					"transformations": [
+						{
+							"name": "JoinSubcategory"
+						},
+						{
+							"name": "JoinCategory"
+						},
+						{
+							"name": "Select1"
+						}
+					],
+					"script": "source(output(\n\t\t{Producto ID} as string,\n\t\t{Numero Producto} as string,\n\t\t{Producto Sub Categoria ID} as string,\n\t\t{Nombre Producto} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTProduct\nsource(output(\n\t\t{Subcategoria Producto ID} as string,\n\t\t{Categoria Producto ID} as string,\n\t\t{Descripcion Subcategoria} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTProductSubcategory\nsource(output(\n\t\t{Categoria Producto ID} as string,\n\t\t{Descripcion Categoria} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtLTCategory\nExtLTProduct, ExtLTProductSubcategory join({Producto Sub Categoria ID} == {Subcategoria Producto ID},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> JoinSubcategory\nJoinSubcategory, ExtLTCategory join(ExtLTProductSubcategory@{Categoria Producto ID} == ExtLTCategory@{Categoria Producto ID},\n\tjoinType:'left',\n\tbroadcast: 'both')~> JoinCategory\nJoinCategory select(mapColumn(\n\t\t{Producto ID},\n\t\t{Numero Producto},\n\t\t{Producto Sub Categoria ID},\n\t\t{Nombre Producto},\n\t\t{Subcategoria Producto ID},\n\t\t{Categoria Producto ID} = ExtLTProductSubcategory@{Categoria Producto ID},\n\t\t{Descripcion Subcategoria},\n\t\t{Categoria Producto ID} = ExtLTCategory@{Categoria Producto ID},\n\t\t{Descripcion Categoria}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tPK_Producto as integer,\n\t\tProducto_ID as integer,\n\t\tDescripcion_Subcategoria as string,\n\t\tNumero_Producto as string,\n\t\tCategoria_ID as string,\n\t\tNombre_Producto as string,\n\t\tDescripcion_Categoria as string,\n\t\tSubcategoria_ID as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPK_Producto = {Producto ID},\n\t\tProducto_ID = {Producto ID},\n\t\tDescripcion_Subcategoria = {Descripcion Subcategoria},\n\t\tNumero_Producto = {Numero Producto},\n\t\tCategoria_ID = {Categoria Producto ID},\n\t\tNombre_Producto = {Nombre Producto},\n\t\tDescripcion_Categoria = {Descripcion Categoria},\n\t\tSubcategoria_ID = {Subcategoria Producto ID}\n\t)) ~> AlmacenarProducto"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DimProducto')]"
+			]
+		}
+	]
+}
