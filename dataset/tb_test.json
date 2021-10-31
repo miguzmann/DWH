@@ -1,5 +1,5 @@
 {
-	"name": "test",
+	"name": "tb_test",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "BankMarketBlob",
@@ -13,7 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "test.json",
+				"fileName": "tb_test.json",
 				"container": "transform"
 			}
 		},
