@@ -121,7 +121,7 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "test",
+								"referenceName": "tb_test",
 								"type": "DatasetReference"
 							},
 							"name": "store"

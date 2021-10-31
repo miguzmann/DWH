@@ -861,7 +861,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/test')]",
+			"name": "[concat(parameters('factoryName'), '/tb_test')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -877,7 +877,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "test.json",
+						"fileName": "tb_test.json",
 						"container": "transform"
 					}
 				},
