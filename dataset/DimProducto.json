@@ -12,13 +12,14 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "Producto_ID",
+				"name": "PK_Producto",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "Categoria_Producto_ID",
-				"type": "varchar"
+				"name": "Producto_ID",
+				"type": "int",
+				"precision": 10
 			},
 			{
 				"name": "Descripcion_Subcategoria",
@@ -34,10 +35,6 @@
 			},
 			{
 				"name": "Nombre_Producto",
-				"type": "varchar"
-			},
-			{
-				"name": "Categoria_Producto_ID_1",
 				"type": "varchar"
 			},
 			{
