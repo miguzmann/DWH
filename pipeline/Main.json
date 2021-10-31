@@ -139,15 +139,6 @@
 							"namespaces": true
 						}
 					},
-					"sink": {
-						"type": "JsonSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "JsonWriteSettings"
-						}
-					},
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
@@ -175,12 +166,6 @@
 				"inputs": [
 					{
 						"referenceName": "tb_tipo_envio",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "tb_tipo_envio_Tra",
 						"type": "DatasetReference"
 					}
 				]

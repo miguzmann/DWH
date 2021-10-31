@@ -1,0 +1,35 @@
+{
+	"name": "tb_tipo_envio_Tra",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BankMarketBlob",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "BankMarketTransform"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "tb_tipo_envio_Tra.csv",
+				"container": "transform"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "{\"idTipoEnvio\":1",
+				"type": "String"
+			},
+			{
+				"name": "\"descTipoEnvio\":\"Tecnologico\"}",
+				"type": "String"
+			}
+		]
+	}
+}
