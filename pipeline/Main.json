@@ -34,39 +34,6 @@
 				}
 			},
 			{
-				"name": "ETL_Products",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "PP_Metas",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "1.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "Product_workflow",
-						"type": "DataFlowReference"
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine",
-					"runConcurrently": true,
-					"continueOnError": true
-				}
-			},
-			{
 				"name": "ModoDeEnvioTransform",
 				"type": "Copy",
 				"dependsOn": [],
