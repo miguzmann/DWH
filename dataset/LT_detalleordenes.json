@@ -1,0 +1,50 @@
+{
+	"name": "LT_detalleordenes",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "BankMarketBlob",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "BankMarketTransform"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Detalle_de_Ordenes.csv",
+				"container": "files"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			}
+		]
+	}
+}
