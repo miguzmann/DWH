@@ -5,6 +5,12 @@
 			"referenceName": "BankMarketBlob",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"Linea total": {
+				"type": "float",
+				"defaultValue": 261.96
+			}
+		},
 		"folder": {
 			"name": "BankMarketTransform"
 		},
