@@ -1,5 +1,5 @@
 {
-	"name": "Dettalleordenes_workflow",
+	"name": "Detalledeordenes_workflow",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -12,9 +12,24 @@
 					"name": "ExTLdetallesdeordenes"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
-			"script": "source(output(\n\t\tColumn_1 as string,\n\t\tColumn_2 as string,\n\t\tColumn_3 as string,\n\t\tColumn_4 as string,\n\t\tColumn_5 as string,\n\t\tColumn_6 as string,\n\t\tColumn_7 as string,\n\t\tColumn_8 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tlimit: 100,\n\tignoreNoFilesFound: false) ~> ExTLdetallesdeordenes"
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DimDetalleOrdenes",
+						"type": "DatasetReference"
+					},
+					"name": "Almacenarproducto"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SurrogateKey1"
+				},
+				{
+					"name": "Select1"
+				}
+			],
+			"script": "source(output(\n\t\tColumn_1 as string,\n\t\tColumn_2 as string,\n\t\tColumn_3 as string,\n\t\tColumn_4 as string,\n\t\tColumn_5 as string,\n\t\tColumn_6 as string,\n\t\tColumn_7 as string,\n\t\tColumn_8 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tlimit: 100,\n\tignoreNoFilesFound: false) ~> ExTLdetallesdeordenes\nExTLdetallesdeordenes keyGenerate(output(PK_detalledeordenes as long),\n\tstartAt: 1L) ~> SurrogateKey1\nSurrogateKey1 select(mapColumn(\n\t\tColumn_1,\n\t\tColumn_2,\n\t\tColumn_3,\n\t\tColumn_4,\n\t\tColumn_5,\n\t\tColumn_6,\n\t\tColumn_7,\n\t\tColumn_8,\n\t\tPK_detalledeordenes\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSurrogateKey1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tPK_DetalleOrden as integer,\n\t\tPK_Order as integer,\n\t\tDetalle_Orden as string,\n\t\tLinea_Total as double,\n\t\tCantidad as decimal(18,5),\n\t\tDescuento as decimal(5,5),\n\t\tPrecio_Unitario as decimal(18,5),\n\t\tGanancia as decimal(18,5),\n\t\tPK_Producto as integer\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Almacenarproducto"
 		}
 	}
 }
