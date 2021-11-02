@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "TipoDeEnvioTransform",
+				"name": "Copy data1",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -42,25 +42,7 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"path": "['@id_tipo']"
-								},
-								"sink": {
-									"path": "idTipoEnvio"
-								}
-							},
-							{
-								"source": {
-									"path": "['@Descripción']"
-								},
-								"sink": {
-									"path": "descTipoEnvio"
-								}
-							}
-						],
-						"collectionReference": "$['Data']['table_maestria.tb_tipo_envio']['maestria.tb_tipo_envio']"
+						"mapComplexValuesToString": false
 					}
 				},
 				"inputs": [
