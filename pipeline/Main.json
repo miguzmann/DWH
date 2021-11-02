@@ -105,12 +105,6 @@
 							"Tipo_x0020_ID": "Descripcion"
 						}
 					}
-				],
-				"outputs": [
-					{
-						"referenceName": "tb_Modo_Envio_Tra",
-						"type": "DatasetReference"
-					}
 				]
 			},
 			{

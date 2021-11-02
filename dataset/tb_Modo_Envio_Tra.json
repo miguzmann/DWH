@@ -1,0 +1,32 @@
+{
+	"name": "tb_Modo_Envio_Tra",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Dimensionality",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "BankMarketTransform"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id_modo",
+				"type": "varchar"
+			},
+			{
+				"name": "Descripcion",
+				"type": "varchar"
+			},
+			{
+				"name": "id_TipoEnvio",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "ModoEnvio"
+		}
+	}
+}
