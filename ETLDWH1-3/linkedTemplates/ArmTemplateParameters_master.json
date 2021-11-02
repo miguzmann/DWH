@@ -14,6 +14,9 @@
 		"bankMarketDatabase_connectionString": {
 			"value": ""
 		},
+		"Dimensionality_connectionString": {
+			"value": ""
+		},
 		"containerUri": {
 			"value": ""
 		},

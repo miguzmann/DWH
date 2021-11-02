@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'bankMarketDatabase'"
 		},
+		"Dimensionality_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Dimensionality'"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -54,6 +58,9 @@
 					},
 					"bankMarketDatabase_connectionString": {
 						"value": "[parameters('bankMarketDatabase_connectionString')]"
+					},
+					"Dimensionality_connectionString": {
+						"value": "[parameters('Dimensionality_connectionString')]"
 					}
 				}
 			},

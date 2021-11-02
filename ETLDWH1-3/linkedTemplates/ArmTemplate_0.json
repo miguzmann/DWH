@@ -18,6 +18,10 @@
 		"bankMarketDatabase_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'bankMarketDatabase'"
+		},
+		"Dimensionality_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Dimensionality'"
 		}
 	},
 	"variables": {
@@ -59,6 +63,19 @@
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
 					"connectionString": "[parameters('bankMarketDatabase_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dimensionality')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('Dimensionality_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -884,50 +901,6 @@
 					},
 					{
 						"name": "Region",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tb_Modo_Envio_Tra')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BankMarketBlob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "BankMarketTransform"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "tb_Modo_Envio_Tra.csv",
-						"container": "transform"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "@id_modo",
-						"type": "String"
-					},
-					{
-						"name": "@Descripcion",
-						"type": "String"
-					},
-					{
-						"name": "@Tipo_x0020_ID",
 						"type": "String"
 					}
 				]
