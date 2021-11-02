@@ -39,7 +39,11 @@
 							"fileExtension": ".txt"
 						}
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mapComplexValuesToString": true
+					}
 				},
 				"inputs": [
 					{
