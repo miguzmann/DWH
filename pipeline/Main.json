@@ -179,12 +179,6 @@
 						"referenceName": "tb_tipo_envio",
 						"type": "DatasetReference"
 					}
-				],
-				"outputs": [
-					{
-						"referenceName": "tb_tipo_envio_Tra",
-						"type": "DatasetReference"
-					}
 				]
 			},
 			{

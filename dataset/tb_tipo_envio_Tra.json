@@ -1,0 +1,28 @@
+{
+	"name": "tb_tipo_envio_Tra",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Dimensionality",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "BankMarketTransform"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id_tipo",
+				"type": "varchar"
+			},
+			{
+				"name": "Descripción",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "TipoEnvio"
+		}
+	}
+}
