@@ -347,8 +347,9 @@
 					},
 					{
 						"name": "imp_subtotal",
-						"type": "float",
-						"precision": 15
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
 					},
 					{
 						"name": "id_modo",
