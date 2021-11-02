@@ -1,0 +1,59 @@
+{
+	"name": "LTDetalleOrdenes",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "bankMarketDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "BankMarketDatabase"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Detalle Orden",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Numero Orden",
+				"type": "varchar"
+			},
+			{
+				"name": "Producto ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Linea Total",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Cantidad",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Descuento",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Precio Unitario",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Ganancia",
+				"type": "float",
+				"precision": 15
+			}
+		],
+		"typeProperties": {
+			"schema": "maestria",
+			"table": "LT_detalle_ordenes"
+		}
+	}
+}

@@ -1,0 +1,50 @@
+{
+	"name": "TbDetalleEnvios",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "bankMarketDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "BankMarketDatabase"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "num_order",
+				"type": "varchar"
+			},
+			{
+				"name": "fec_orden",
+				"type": "date"
+			},
+			{
+				"name": "fec_envio",
+				"type": "date"
+			},
+			{
+				"name": "modo_envio",
+				"type": "varchar"
+			},
+			{
+				"name": "cliente_id",
+				"type": "varchar"
+			},
+			{
+				"name": "imp_subtotal",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "region_id",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "maestria",
+			"table": "tb_detalle_envios"
+		}
+	}
+}
