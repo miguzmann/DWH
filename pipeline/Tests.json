@@ -3,11 +3,11 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "ModoDeEnvioTransform",
-				"type": "Copy",
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
-					"timeout": "7.00:00:00",
+					"timeout": "1.00:00:00",
 					"retry": 0,
 					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
@@ -15,141 +15,16 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "XmlSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "XmlReadSettings",
-							"validationMode": "none",
-							"namespaces": true
-						}
+					"dataflow": {
+						"referenceName": "Ordenes_workflow",
+						"type": "DataFlowReference"
 					},
-					"sink": {
-						"type": "AzureSqlSink",
-						"preCopyScript": "delete from ModoEnvio",
-						"disableMetricsCollection": false
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"path": "['@id_modo']"
-								},
-								"sink": {
-									"name": "id_modo"
-								}
-							},
-							{
-								"source": {
-									"path": "['@Descripcion']"
-								},
-								"sink": {
-									"name": "Descripcion"
-								}
-							},
-							{
-								"source": {
-									"path": "['@Tipo_x0020_ID']"
-								},
-								"sink": {
-									"name": "id_TipoEnvio"
-								}
-							}
-						],
-						"collectionReference": "$['Data']['table_maestria.tb_modo_envio']['maestria.tb_modo_envio']"
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "tb_modo_envio",
-						"type": "DatasetReference",
-						"parameters": {
-							"id_modo": "id_modo",
-							"Descripcion": "Descripcion",
-							"Tipo_x0020_ID": "Descripcion"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "tb_Modo_Envio_Tra",
-						"type": "DatasetReference"
-					}
-				]
-			},
-			{
-				"name": "TipoDeEnvioTransform",
-				"type": "Copy",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "XmlSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "XmlReadSettings",
-							"validationMode": "none",
-							"namespaces": true
-						}
-					},
-					"sink": {
-						"type": "AzureSqlSink",
-						"preCopyScript": "Delete from TipoEnvio",
-						"disableMetricsCollection": false
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"mappings": [
-							{
-								"source": {
-									"path": "['@id_tipo']"
-								},
-								"sink": {
-									"name": "id_tipo"
-								}
-							},
-							{
-								"source": {
-									"path": "['@Descripción']"
-								},
-								"sink": {
-									"name": "Descripción"
-								}
-							}
-						],
-						"collectionReference": "$['Data']['table_maestria.tb_tipo_envio']['maestria.tb_tipo_envio']"
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "tb_tipo_envio",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "tb_tipo_envio_Tra",
-						"type": "DatasetReference"
-					}
-				]
+					"traceLevel": "Fine"
+				}
 			}
 		],
 		"folder": {
