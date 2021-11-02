@@ -483,7 +483,25 @@
 							"enableStaging": false,
 							"translator": {
 								"type": "TabularTranslator",
-								"mapComplexValuesToString": true
+								"mappings": [
+									{
+										"source": {
+											"path": "[['@id_tipo']"
+										},
+										"sink": {
+											"name": "@@id_tipo"
+										}
+									},
+									{
+										"source": {
+											"path": "[['@Descripción']"
+										},
+										"sink": {
+											"name": "@@Descripción"
+										}
+									}
+								],
+								"collectionReference": "$['Data']['table_maestria.tb_tipo_envio']['maestria.tb_tipo_envio']"
 							}
 						},
 						"inputs": [
@@ -1471,21 +1489,11 @@
 						"container": "transform"
 					},
 					"columnDelimiter": ",",
-					"encodingName": "ISO-8859-1",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
-				"schema": [
-					{
-						"name": "@id_tipo",
-						"type": "String"
-					},
-					{
-						"name": "@Descripción",
-						"type": "String"
-					}
-				]
+				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
@@ -1621,6 +1629,66 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/LTDetalleOrdenes')]",
 				"[concat(variables('factoryId'), '/datasets/DimDetalleOrdenes')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Ordenes_workflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "TbDetalleEnvios",
+								"type": "DatasetReference"
+							},
+							"name": "TbOrdenes"
+						},
+						{
+							"dataset": {
+								"referenceName": "tb_Modo_Envio_Tra",
+								"type": "DatasetReference"
+							},
+							"name": "ModoEnvio"
+						},
+						{
+							"dataset": {
+								"referenceName": "Regiones",
+								"type": "DatasetReference"
+							},
+							"name": "Regiones"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "FactOrdenes",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Join1"
+						},
+						{
+							"name": "Select1"
+						},
+						{
+							"name": "Join2"
+						}
+					],
+					"script": "source(output(\n\t\tnum_order as string,\n\t\tfec_orden as date,\n\t\tfec_envio as date,\n\t\tmodo_envio as string,\n\t\tcliente_id as string,\n\t\timp_subtotal as double,\n\t\tregion_id as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> TbOrdenes\nsource(output(\n\t\t{@id_modo} as string,\n\t\t{@Descripcion} as string,\n\t\t{@Tipo_x0020_ID} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ModoEnvio\nsource(output(\n\t\t{Region ID} as integer,\n\t\t{Region Desc} as string,\n\t\t{Detalle region} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Regiones\nJoin2, ModoEnvio join(modo_envio == {@id_modo},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join1\nJoin1 select(mapColumn(\n\t\tnum_order,\n\t\tfec_orden,\n\t\tfec_envio,\n\t\tid_modo_envio = modo_envio,\n\t\tcliente_id,\n\t\timp_subtotal,\n\t\tregion_id,\n\t\t{Region Desc},\n\t\t{Detalle region},\n\t\tmodo_envio = {@Descripcion},\n\t\tid_Tipo_Envio = {@Tipo_x0020_ID}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nTbOrdenes, Regiones join(region_id == {Region ID},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join2\nSelect1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tnum_order as string,\n\t\tOrderId as string,\n\t\tfec_orden as date,\n\t\tfec_envio as date,\n\t\timp_subtotal as double,\n\t\tid_modo as integer,\n\t\tmodo_envio as string,\n\t\tID_Tipo_envio as integer,\n\t\tdescripcion_envio as string,\n\t\tRegion_ID as integer,\n\t\tRegion_descripcion as string,\n\t\tDetalle_Region as string,\n\t\tCodigo as integer\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> sink1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/TbDetalleEnvios')]",
+				"[concat(variables('factoryId'), '/datasets/tb_Modo_Envio_Tra')]",
+				"[concat(variables('factoryId'), '/datasets/Regiones')]",
+				"[concat(variables('factoryId'), '/datasets/FactOrdenes')]"
 			]
 		},
 		{
