@@ -12,12 +12,14 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "num_order",
-				"type": "varchar"
+				"name": "PK_Order",
+				"type": "int",
+				"precision": 10
 			},
 			{
-				"name": "OrderId",
-				"type": "varchar"
+				"name": "num_order",
+				"type": "int",
+				"precision": 10
 			},
 			{
 				"name": "fec_orden",
@@ -64,7 +66,7 @@
 				"type": "varchar"
 			},
 			{
-				"name": "Codigo",
+				"name": "PK_Cliente",
 				"type": "int",
 				"precision": 10
 			}
