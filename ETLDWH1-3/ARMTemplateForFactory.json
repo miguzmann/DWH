@@ -15,13 +15,13 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ConnectorAzureRafael'"
 		},
-		"bankMarketDatabase_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'bankMarketDatabase'"
-		},
 		"Dimensionality_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'Dimensionality'"
+		},
+		"bankMarketDatabase_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'bankMarketDatabase'"
 		}
 	},
 	"variables": {
@@ -1314,6 +1314,43 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/tb_Modo_Envio_Tra')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Dimensionality",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketTransform"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_modo",
+						"type": "varchar"
+					},
+					{
+						"name": "Descripcion",
+						"type": "varchar"
+					},
+					{
+						"name": "id_TipoEnvio",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "ModoEnvio"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Dimensionality')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/tb_modo_envio')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1377,6 +1414,39 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/tb_tipo_envio_Tra')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Dimensionality",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketTransform"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_tipo",
+						"type": "varchar"
+					},
+					{
+						"name": "Descripción",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "TipoEnvio"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Dimensionality')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/BankMarketBlob')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -1398,6 +1468,19 @@
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
 					"connectionString": "[parameters('ConnectorAzureRafael_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dimensionality')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('Dimensionality_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -1584,7 +1667,7 @@
 							"name": "Join4"
 						}
 					],
-					"script": "source(output(\n\t\tnum_order as string,\n\t\tfec_orden as date,\n\t\tfec_envio as date,\n\t\tmodo_envio as string,\n\t\tcliente_id as string,\n\t\timp_subtotal as double,\n\t\tregion_id as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> TbOrdenes\nsource(output(\n\t\tid_modo as string,\n\t\tDescripcion as string,\n\t\tid_TipoEnvio as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ModoEnvio\nsource(output(\n\t\t{Region ID} as integer,\n\t\t{Region Desc} as string,\n\t\t{Detalle region} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Regiones\nsource(output(\n\t\tid_tipo as string,\n\t\t{Descripción} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> TipoEnvio\nsource(output(\n\t\tPK_Cliente as integer,\n\t\tCliente_ID as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string,\n\t\tPais as string,\n\t\tCiudad as string,\n\t\tEstado as string,\n\t\tRegion as string,\n\t\t{Codigo Postal} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> MapCliente\nJoin2, ModoEnvio join(modo_envio == id_modo,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join1\nJoin3 select(mapColumn(\n\t\tnum_order,\n\t\tfec_orden,\n\t\tfec_envio,\n\t\tid_modo_envio = modo_envio,\n\t\tcliente_id,\n\t\timp_subtotal,\n\t\tregion_id,\n\t\t{Region Desc},\n\t\t{Detalle region},\n\t\tmodo_envio = Descripcion,\n\t\tid_Tipo_Envio = id_TipoEnvio,\n\t\tTipo_envio = {Descripción}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nTbOrdenes, Regiones join(region_id == {Region ID},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join2\nJoin1, TipoEnvio join(id_TipoEnvio == id_tipo,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join3\nSelect1 keyGenerate(output(PK_Orden as long),\n\tstartAt: 1L) ~> SurrogateKey1\nMapCliente select(mapColumn(\n\t\tPK_Cliente,\n\t\tCliente_ID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectDataCliente\nSurrogateKey1, SelectDataCliente join(Select1@cliente_id == SelectDataCliente@Cliente_ID,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join4\nJoin4 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tPK_Order as integer,\n\t\tnum_order as integer,\n\t\tfec_orden as date,\n\t\tfec_envio as date,\n\t\timp_subtotal as decimal(18,2),\n\t\tid_modo as integer,\n\t\tmodo_envio as string,\n\t\tID_Tipo_envio as integer,\n\t\tdescripcion_envio as string,\n\t\tRegion_ID as integer,\n\t\tRegion_descripcion as string,\n\t\tDetalle_Region as string,\n\t\tPK_Cliente as integer\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPK_Order = PK_Orden,\n\t\tnum_order,\n\t\tfec_orden,\n\t\tfec_envio,\n\t\timp_subtotal,\n\t\tid_modo = id_modo_envio,\n\t\tmodo_envio,\n\t\tID_Tipo_envio = id_Tipo_Envio,\n\t\tdescripcion_envio = Tipo_envio,\n\t\tRegion_ID = region_id,\n\t\tRegion_descripcion = {Region Desc},\n\t\tDetalle_Region = {Detalle region},\n\t\tPK_Cliente\n\t)) ~> StoreTable"
+					"script": "source(output(\n\t\tnum_order as string,\n\t\tfec_orden as date,\n\t\tfec_envio as date,\n\t\tmodo_envio as string,\n\t\tcliente_id as string,\n\t\timp_subtotal as double,\n\t\tregion_id as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> TbOrdenes\nsource(output(\n\t\tid_modo as string,\n\t\tDescripcion as string,\n\t\tid_TipoEnvio as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ModoEnvio\nsource(output(\n\t\t{Region ID} as integer,\n\t\t{Region Desc} as string,\n\t\t{Detalle region} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Regiones\nsource(output(\n\t\tid_tipo as string,\n\t\t{Descripción} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> TipoEnvio\nsource(output(\n\t\tPK_Cliente as integer,\n\t\tCliente_ID as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string,\n\t\tPais as string,\n\t\tCiudad as string,\n\t\tEstado as string,\n\t\tRegion as string,\n\t\t{Codigo Postal} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> MapCliente\nJoin2, ModoEnvio join(modo_envio == id_modo,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join1\nJoin3 select(mapColumn(\n\t\tnum_order,\n\t\tfec_orden,\n\t\tfec_envio,\n\t\tid_modo_envio = modo_envio,\n\t\tcliente_id,\n\t\timp_subtotal,\n\t\tregion_id,\n\t\t{Region Desc},\n\t\t{Detalle region},\n\t\tmodo_envio = Descripcion,\n\t\tid_Tipo_Envio = id_TipoEnvio,\n\t\tTipo_envio = {Descripción}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nTbOrdenes, Regiones join(region_id == {Region ID},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join2\nJoin1, TipoEnvio join(id_TipoEnvio == id_tipo,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join3\nSelect1 keyGenerate(output(PK_Orden as long),\n\tstartAt: 1L) ~> SurrogateKey1\nMapCliente select(mapColumn(\n\t\tPK_Cliente,\n\t\tCliente_ID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectDataCliente\nSurrogateKey1, SelectDataCliente join(Select1@cliente_id == SelectDataCliente@Cliente_ID,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join4\nJoin4 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tPK_Order as integer,\n\t\tnum_order as integer,\n\t\tfec_orden as date,\n\t\tfec_envio as date,\n\t\timp_subtotal as decimal(18,2),\n\t\tid_modo as integer,\n\t\tmodo_envio as string,\n\t\tID_Tipo_envio as integer,\n\t\tdescripcion_envio as string,\n\t\tRegion_ID as integer,\n\t\tRegion_descripcion as string,\n\t\tDetalle_Region as string,\n\t\tPK_Cliente as integer\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tpreSQLs:['Delete from FACT_Ordenes;'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPK_Order = PK_Orden,\n\t\tnum_order,\n\t\tfec_orden,\n\t\tfec_envio,\n\t\timp_subtotal,\n\t\tid_modo = id_modo_envio,\n\t\tmodo_envio,\n\t\tID_Tipo_envio = id_Tipo_Envio,\n\t\tdescripcion_envio = Tipo_envio,\n\t\tRegion_ID = region_id,\n\t\tRegion_descripcion = {Region Desc},\n\t\tDetalle_Region = {Detalle region},\n\t\tPK_Cliente\n\t)) ~> StoreTable"
 				}
 			},
 			"dependsOn": [
@@ -1695,89 +1778,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/db_target_region')]",
 				"[concat(variables('factoryId'), '/datasets/DimMetas')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Dimensionality')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('Dimensionality_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tb_tipo_envio_Tra')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Dimensionality",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "BankMarketTransform"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "id_tipo",
-						"type": "varchar"
-					},
-					{
-						"name": "Descripción",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "TipoEnvio"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Dimensionality')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tb_Modo_Envio_Tra')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Dimensionality",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "BankMarketTransform"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "id_modo",
-						"type": "varchar"
-					},
-					{
-						"name": "Descripcion",
-						"type": "varchar"
-					},
-					{
-						"name": "id_TipoEnvio",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "ModoEnvio"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Dimensionality')]"
 			]
 		}
 	]

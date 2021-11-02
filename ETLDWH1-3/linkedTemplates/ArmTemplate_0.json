@@ -15,13 +15,13 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ConnectorAzureRafael'"
 		},
-		"bankMarketDatabase_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'bankMarketDatabase'"
-		},
 		"Dimensionality_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'Dimensionality'"
+		},
+		"bankMarketDatabase_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'bankMarketDatabase'"
 		}
 	},
 	"variables": {
@@ -55,19 +55,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/bankMarketDatabase')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('bankMarketDatabase_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Dimensionality')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -76,6 +63,19 @@
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
 					"connectionString": "[parameters('Dimensionality_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/bankMarketDatabase')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('bankMarketDatabase_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -910,40 +910,40 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/tb_modo_envio')]",
+			"name": "[concat(parameters('factoryName'), '/tb_Modo_Envio_Tra')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "BankMarketBlob",
+					"referenceName": "Dimensionality",
 					"type": "LinkedServiceReference"
 				},
-				"parameters": {
-					"id_modo": {
-						"type": "int"
-					},
-					"Descripcion": {
-						"type": "string"
-					},
-					"Tipo_x0020_ID": {
-						"type": "int"
-					}
-				},
 				"folder": {
-					"name": "BankMarketSource"
+					"name": "BankMarketTransform"
 				},
 				"annotations": [],
-				"type": "Xml",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "tb_modo_envio.xml",
-						"container": "files"
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_modo",
+						"type": "varchar"
+					},
+					{
+						"name": "Descripcion",
+						"type": "varchar"
+					},
+					{
+						"name": "id_TipoEnvio",
+						"type": "varchar"
 					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "ModoEnvio"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
+				"[concat(variables('factoryId'), '/linkedServices/Dimensionality')]"
 			]
 		}
 	]

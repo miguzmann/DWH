@@ -11,10 +11,10 @@
 		"ConnectorAzureRafael_connectionString": {
 			"value": ""
 		},
-		"bankMarketDatabase_connectionString": {
+		"Dimensionality_connectionString": {
 			"value": ""
 		},
-		"Dimensionality_connectionString": {
+		"bankMarketDatabase_connectionString": {
 			"value": ""
 		},
 		"containerUri": {

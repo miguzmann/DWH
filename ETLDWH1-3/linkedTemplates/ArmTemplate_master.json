@@ -15,13 +15,13 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'ConnectorAzureRafael'"
 		},
-		"bankMarketDatabase_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'bankMarketDatabase'"
-		},
 		"Dimensionality_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'Dimensionality'"
+		},
+		"bankMarketDatabase_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'bankMarketDatabase'"
 		},
 		"containerUri": {
 			"type": "string",
@@ -56,11 +56,11 @@
 					"ConnectorAzureRafael_connectionString": {
 						"value": "[parameters('ConnectorAzureRafael_connectionString')]"
 					},
-					"bankMarketDatabase_connectionString": {
-						"value": "[parameters('bankMarketDatabase_connectionString')]"
-					},
 					"Dimensionality_connectionString": {
 						"value": "[parameters('Dimensionality_connectionString')]"
+					},
+					"bankMarketDatabase_connectionString": {
+						"value": "[parameters('bankMarketDatabase_connectionString')]"
 					}
 				}
 			},
