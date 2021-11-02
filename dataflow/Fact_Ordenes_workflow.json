@@ -1,0 +1,20 @@
+{
+	"name": "Fact_Ordenes_workflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "TbDetalleEnvios",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"script": "source(output(\n\t\tnum_order as string,\n\t\tfec_orden as date,\n\t\tfec_envio as date,\n\t\tmodo_envio as string,\n\t\tcliente_id as string,\n\t\timp_subtotal as double,\n\t\tregion_id as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source1"
+		}
+	}
+}
