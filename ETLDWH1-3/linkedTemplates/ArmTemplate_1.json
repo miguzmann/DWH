@@ -13,6 +13,216 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/LTDetalleOrdenes')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "bankMarketDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketDatabase"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Detalle Orden",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Numero Orden",
+						"type": "varchar"
+					},
+					{
+						"name": "Producto ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Linea Total",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Cantidad",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Descuento",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Precio Unitario",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Ganancia",
+						"type": "float",
+						"precision": 15
+					}
+				],
+				"typeProperties": {
+					"schema": "maestria",
+					"table": "LT_detalle_ordenes"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TbDetalleEnvios')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "bankMarketDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketDatabase"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "num_order",
+						"type": "varchar"
+					},
+					{
+						"name": "fec_orden",
+						"type": "date"
+					},
+					{
+						"name": "fec_envio",
+						"type": "date"
+					},
+					{
+						"name": "modo_envio",
+						"type": "varchar"
+					},
+					{
+						"name": "cliente_id",
+						"type": "varchar"
+					},
+					{
+						"name": "imp_subtotal",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "region_id",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "maestria",
+					"table": "tb_detalle_envios"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Tests')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "TipoDeEnvioTransform",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "XmlSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "XmlReadSettings",
+									"validationMode": "none",
+									"namespaces": true
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "[['@id_tipo']"
+										},
+										"sink": {
+											"path": "idTipoEnvio"
+										}
+									},
+									{
+										"source": {
+											"path": "[['@Descripción']"
+										},
+										"sink": {
+											"path": "descTipoEnvio"
+										}
+									}
+								],
+								"collectionReference": "$['Data']['table_maestria.tb_tipo_envio']['maestria.tb_tipo_envio']"
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "tb_tipo_envio",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "tb_tipo_envio_Tra",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "ETL"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-10-23T04:50:24Z"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Custormer_workflow')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -59,6 +269,46 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Detalledeordenes_workflow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "LTDetalleOrdenes",
+								"type": "DatasetReference"
+							},
+							"name": "ExTLdetallesdeordenes"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DimDetalleOrdenes",
+								"type": "DatasetReference"
+							},
+							"name": "Almacenarproducto"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Select1"
+						},
+						{
+							"name": "SurrogateKey1"
+						}
+					],
+					"script": "source(output(\n\t\t{Detalle Orden} as integer,\n\t\t{Numero Orden} as string,\n\t\t{Producto ID} as integer,\n\t\t{Linea Total} as double,\n\t\tCantidad as integer,\n\t\tDescuento as double,\n\t\t{Precio Unitario} as double,\n\t\tGanancia as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tlimit: 100,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExTLdetallesdeordenes\nExTLdetallesdeordenes select(skipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 keyGenerate(output(PK_detalledeordenes as long),\n\tstartAt: 1L) ~> SurrogateKey1\nSurrogateKey1 sink(allowSchemaDrift: true,\n\tvalidateSchema: true,\n\tinput(\n\t\tPK_DetalleOrden as integer,\n\t\tPK_Order as integer,\n\t\tDetalle_Orden as string,\n\t\tLinea_Total as double,\n\t\tCantidad as decimal(18,5),\n\t\tDescuento as decimal(5,5),\n\t\tPrecio_Unitario as decimal(18,5),\n\t\tGanancia as decimal(18,5),\n\t\tPK_Producto as integer\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Almacenarproducto"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/LTDetalleOrdenes')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Product_workflow')]",
@@ -511,6 +761,36 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "PP_Detalledeordenes",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Detalledeordenes_workflow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"ExTLdetallesdeordenes": {},
+									"Almacenarproducto": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Coarse"
+						}
 					}
 				],
 				"policy": {
@@ -526,59 +806,8 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/Target_Workflow')]",
 				"[concat(variables('factoryId'), '/dataflows/Custormer_workflow')]",
-				"[concat(variables('factoryId'), '/dataflows/Product_workflow')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Tests')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "1.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "Custormer_workflow",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"TransformedCustomer": {},
-									"ExtratedCustomer": {},
-									"StoreDWHCustomer": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "ETL"
-				},
-				"annotations": [],
-				"lastPublishTime": "2021-10-23T04:50:24Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Custormer_workflow')]"
+				"[concat(variables('factoryId'), '/dataflows/Product_workflow')]",
+				"[concat(variables('factoryId'), '/dataflows/Detalledeordenes_workflow')]"
 			]
 		}
 	]
