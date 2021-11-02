@@ -557,7 +557,7 @@
 											"path": "[['@id_tipo']"
 										},
 										"sink": {
-											"path": "idTipoEnvio"
+											"name": "id_tipo"
 										}
 									},
 									{
@@ -565,7 +565,7 @@
 											"path": "[['@Descripción']"
 										},
 										"sink": {
-											"path": "descTipoEnvio"
+											"name": "Descripción"
 										}
 									}
 								],
