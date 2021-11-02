@@ -42,7 +42,18 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
-						"mapComplexValuesToString": true
+						"mappings": [
+							{
+								"source": {
+									"path": "$['Data']['table_maestria.tb_tipo_envio']['maestria.tb_tipo_envio'][0]['@id_tipo']"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Data']['table_maestria.tb_tipo_envio']['maestria.tb_tipo_envio'][0]['@Descripcion']"
+								}
+							}
+						]
 					}
 				},
 				"inputs": [

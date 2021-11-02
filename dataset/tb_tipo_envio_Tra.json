@@ -21,15 +21,6 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": [
-			{
-				"name": "@id_tipo",
-				"type": "String"
-			},
-			{
-				"name": "@Descripción",
-				"type": "String"
-			}
-		]
+		"schema": []
 	}
 }
