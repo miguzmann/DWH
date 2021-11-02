@@ -395,6 +395,70 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/LTDetalleOrdenes')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "bankMarketDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketDatabase"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Detalle Orden",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Numero Orden",
+						"type": "varchar"
+					},
+					{
+						"name": "Producto ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Linea Total",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Cantidad",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Descuento",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Precio Unitario",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Ganancia",
+						"type": "float",
+						"precision": 15
+					}
+				],
+				"typeProperties": {
+					"schema": "maestria",
+					"table": "LT_detalle_ordenes"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/bankMarketDatabase')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/LT_Customer_Tra')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -665,6 +729,61 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/TbDetalleEnvios')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "bankMarketDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketDatabase"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "num_order",
+						"type": "varchar"
+					},
+					{
+						"name": "fec_orden",
+						"type": "date"
+					},
+					{
+						"name": "fec_envio",
+						"type": "date"
+					},
+					{
+						"name": "modo_envio",
+						"type": "varchar"
+					},
+					{
+						"name": "cliente_id",
+						"type": "varchar"
+					},
+					{
+						"name": "imp_subtotal",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "region_id",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "maestria",
+					"table": "tb_detalle_envios"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/bankMarketDatabase')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/db_target_region')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -846,73 +965,6 @@
 						"container": "files"
 					}
 				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tb_tipo_envio')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BankMarketBlob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "BankMarketSource"
-				},
-				"annotations": [],
-				"type": "Xml",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "tb_tipo_envio.xml",
-						"container": "files"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tb_tipo_envio_Tra')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BankMarketBlob",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "BankMarketTransform"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "tb_tipo_envio_Tra.csv",
-						"container": "transform"
-					},
-					"columnDelimiter": ",",
-					"encodingName": "ISO-8859-1",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "@id_tipo",
-						"type": "String"
-					},
-					{
-						"name": "@Descripción",
-						"type": "String"
-					}
-				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/BankMarketBlob')]"
