@@ -53,15 +53,9 @@
 						}
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
+						"type": "AzureSqlSink",
+						"preCopyScript": "delete from ModoEnvio",
+						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
 					"translator": {
@@ -105,6 +99,12 @@
 							"Tipo_x0020_ID": "Descripcion"
 						}
 					}
+				],
+				"outputs": [
+					{
+						"referenceName": "tb_Modo_Envio_Tra",
+						"type": "DatasetReference"
+					}
 				]
 			},
 			{
@@ -134,15 +134,9 @@
 						}
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
+						"type": "AzureSqlSink",
+						"preCopyScript": "Delete from TipoEnvio",
+						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
 					"translator": {
@@ -171,6 +165,12 @@
 				"inputs": [
 					{
 						"referenceName": "tb_tipo_envio",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "tb_tipo_envio_Tra",
 						"type": "DatasetReference"
 					}
 				]
