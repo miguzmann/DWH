@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "LT_detalleordenes",
+						"referenceName": "LTDetalleOrdenes",
 						"type": "DatasetReference"
 					},
 					"name": "ExTLdetallesdeordenes"
@@ -29,7 +29,7 @@
 					"name": "SurrogateKey1"
 				}
 			],
-			"script": "source(output(\n\t\t{Detalle Orden} as string,\n\t\t{Numero Orden} as integer,\n\t\t{Producto ID} as integer,\n\t\t{Linea Total} as float,\n\t\tCantidad as decimal(10,0),\n\t\tDescuento as decimal(10,0),\n\t\t{Precio Unitario} as decimal(10,0),\n\t\tGanancia as decimal(10,0)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tlimit: 100,\n\tignoreNoFilesFound: false) ~> ExTLdetallesdeordenes\nExTLdetallesdeordenes select(mapColumn(\n\t\t{Detalle orden} = {Detalle Orden},\n\t\t{Numero orden} = {Numero Orden},\n\t\t{Producto ID},\n\t\t{Linea Toltal} = {Linea Total},\n\t\tCantidad,\n\t\tDescuento,\n\t\t{Precio Unitario},\n\t\tGanancia,\n\t\tPK_detalledeordenes\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 keyGenerate(output(PK_detalledeordenes as long),\n\tstartAt: 1L) ~> SurrogateKey1\nSurrogateKey1 sink(allowSchemaDrift: true,\n\tvalidateSchema: true,\n\tinput(\n\t\tPK_DetalleOrden as integer,\n\t\tPK_Order as integer,\n\t\tDetalle_Orden as string,\n\t\tLinea_Total as double,\n\t\tCantidad as decimal(18,5),\n\t\tDescuento as decimal(5,5),\n\t\tPrecio_Unitario as decimal(18,5),\n\t\tGanancia as decimal(18,5),\n\t\tPK_Producto as integer\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Almacenarproducto"
+			"script": "source(output(\n\t\t{Detalle Orden} as integer,\n\t\t{Numero Orden} as string,\n\t\t{Producto ID} as integer,\n\t\t{Linea Total} as double,\n\t\tCantidad as integer,\n\t\tDescuento as double,\n\t\t{Precio Unitario} as double,\n\t\tGanancia as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tlimit: 100,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExTLdetallesdeordenes\nExTLdetallesdeordenes select(mapColumn(\n\t\t{Detalle orden} = {Detalle Orden},\n\t\t{Numero orden} = {Numero Orden},\n\t\t{Producto ID},\n\t\t{Linea Toltal} = {Linea Total},\n\t\tCantidad,\n\t\tDescuento,\n\t\t{Precio Unitario},\n\t\tGanancia,\n\t\tPK_detalledeordenes\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 keyGenerate(output(PK_detalledeordenes as long),\n\tstartAt: 1L) ~> SurrogateKey1\nSurrogateKey1 sink(allowSchemaDrift: true,\n\tvalidateSchema: true,\n\tinput(\n\t\tPK_DetalleOrden as integer,\n\t\tPK_Order as integer,\n\t\tDetalle_Orden as string,\n\t\tLinea_Total as double,\n\t\tCantidad as decimal(18,5),\n\t\tDescuento as decimal(5,5),\n\t\tPrecio_Unitario as decimal(18,5),\n\t\tGanancia as decimal(18,5),\n\t\tPK_Producto as integer\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Almacenarproducto"
 		}
 	}
 }
