@@ -148,7 +148,7 @@
 											"path": "[['@id_modo']"
 										},
 										"sink": {
-											"path": "idModo"
+											"name": "id_modo"
 										}
 									},
 									{
@@ -156,7 +156,7 @@
 											"path": "[['@Descripcion']"
 										},
 										"sink": {
-											"path": "Desc"
+											"name": "Descripcion"
 										}
 									},
 									{
@@ -164,7 +164,7 @@
 											"path": "[['@Tipo_x0020_ID']"
 										},
 										"sink": {
-											"path": "IdTipoEnvio"
+											"name": "id_TipoEnvio"
 										}
 									}
 								],
