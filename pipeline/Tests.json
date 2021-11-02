@@ -45,15 +45,22 @@
 						"mappings": [
 							{
 								"source": {
-									"path": "$['Data']['table_maestria.tb_tipo_envio']['maestria.tb_tipo_envio'][0]['@id_tipo']"
+									"path": "['@id_tipo']"
+								},
+								"sink": {
+									"name": "@@id_tipo"
 								}
 							},
 							{
 								"source": {
-									"path": "$['Data']['table_maestria.tb_tipo_envio']['maestria.tb_tipo_envio'][0]['@Descripcion']"
+									"path": "['@Descripción']"
+								},
+								"sink": {
+									"name": "@@Descripción"
 								}
 							}
-						]
+						],
+						"collectionReference": "$['Data']['table_maestria.tb_tipo_envio']['maestria.tb_tipo_envio']"
 					}
 				},
 				"inputs": [
