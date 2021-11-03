@@ -103,6 +103,81 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Garbage_Ordenes')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Dimensionality",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Garbage"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "PK_Order",
+						"type": "varchar"
+					},
+					{
+						"name": "num_order",
+						"type": "varchar"
+					},
+					{
+						"name": "fec_orden",
+						"type": "varchar"
+					},
+					{
+						"name": "fec_envio",
+						"type": "varchar"
+					},
+					{
+						"name": "imp_subtotal",
+						"type": "varchar"
+					},
+					{
+						"name": "id_modo",
+						"type": "varchar"
+					},
+					{
+						"name": "modo_envio",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_Tipo_envio",
+						"type": "varchar"
+					},
+					{
+						"name": "descripcion_envio",
+						"type": "varchar"
+					},
+					{
+						"name": "Region_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "Region_descripcion",
+						"type": "varchar"
+					},
+					{
+						"name": "Detalle_Region",
+						"type": "varchar"
+					},
+					{
+						"name": "PK_Cliente",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Garbage_Ordenes"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Custormer_workflow')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -239,6 +314,13 @@
 								"type": "DatasetReference"
 							},
 							"name": "StoreTable"
+						},
+						{
+							"dataset": {
+								"referenceName": "Garbage_Ordenes",
+								"type": "DatasetReference"
+							},
+							"name": "Garbage"
 						}
 					],
 					"transformations": [
@@ -265,13 +347,17 @@
 						},
 						{
 							"name": "Filter1"
+						},
+						{
+							"name": "Filter2"
 						}
 					],
-					"script": "source(output(\n\t\tnum_order as string,\n\t\tfec_orden as date,\n\t\tfec_envio as date,\n\t\tmodo_envio as string,\n\t\tcliente_id as string,\n\t\timp_subtotal as double,\n\t\tregion_id as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> TbOrdenes\nsource(output(\n\t\tid_modo as string,\n\t\tDescripcion as string,\n\t\tid_TipoEnvio as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ModoEnvio\nsource(output(\n\t\t{Region ID} as integer,\n\t\t{Region Desc} as string,\n\t\t{Detalle region} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Regiones\nsource(output(\n\t\tid_tipo as string,\n\t\t{Descripción} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> TipoEnvio\nsource(output(\n\t\tPK_Cliente as integer,\n\t\tCliente_ID as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string,\n\t\tPais as string,\n\t\tCiudad as string,\n\t\tEstado as string,\n\t\tRegion as string,\n\t\t{Codigo Postal} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> MapCliente\nJoin2, ModoEnvio join(modo_envio == id_modo,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join1\nJoin3 select(mapColumn(\n\t\tnum_order,\n\t\tfec_orden,\n\t\tfec_envio,\n\t\tid_modo_envio = modo_envio,\n\t\tcliente_id,\n\t\timp_subtotal,\n\t\tregion_id,\n\t\t{Region Desc},\n\t\t{Detalle region},\n\t\tmodo_envio = Descripcion,\n\t\tid_Tipo_Envio = id_TipoEnvio,\n\t\tTipo_envio = {Descripción}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nTbOrdenes, Regiones join(region_id == {Region ID},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join2\nJoin1, TipoEnvio join(id_TipoEnvio == id_tipo,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join3\nMapCliente select(mapColumn(\n\t\tPK_Cliente,\n\t\tCliente_ID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectDataCliente\nSelect1, SelectDataCliente join(Select1@cliente_id == SelectDataCliente@Cliente_ID,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join4\nJoin4 keyGenerate(output(PK_Ordenes as long),\n\tstartAt: 1L) ~> SurrogateKey1\nSurrogateKey1 filter(!isNull(PK_Cliente)) ~> Filter1\nFilter1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tPK_Order as integer,\n\t\tnum_order as integer,\n\t\tfec_orden as date,\n\t\tfec_envio as date,\n\t\timp_subtotal as decimal(18,2),\n\t\tid_modo as integer,\n\t\tmodo_envio as string,\n\t\tID_Tipo_envio as integer,\n\t\tdescripcion_envio as string,\n\t\tRegion_ID as integer,\n\t\tRegion_descripcion as string,\n\t\tDetalle_Region as string,\n\t\tPK_Cliente as integer\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tpreSQLs:['Delete from FACT_Ordenes;'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPK_Order = PK_Ordenes,\n\t\tnum_order,\n\t\tfec_orden,\n\t\tfec_envio,\n\t\timp_subtotal,\n\t\tid_modo = id_modo_envio,\n\t\tmodo_envio,\n\t\tID_Tipo_envio = id_Tipo_Envio,\n\t\tdescripcion_envio = Tipo_envio,\n\t\tRegion_ID = region_id,\n\t\tRegion_descripcion = {Region Desc},\n\t\tDetalle_Region = {Detalle region},\n\t\tPK_Cliente\n\t)) ~> StoreTable"
+					"script": "source(output(\n\t\tnum_order as string,\n\t\tfec_orden as date,\n\t\tfec_envio as date,\n\t\tmodo_envio as string,\n\t\tcliente_id as string,\n\t\timp_subtotal as double,\n\t\tregion_id as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tlimit: 1000,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> TbOrdenes\nsource(output(\n\t\tid_modo as string,\n\t\tDescripcion as string,\n\t\tid_TipoEnvio as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ModoEnvio\nsource(output(\n\t\t{Region ID} as integer,\n\t\t{Region Desc} as string,\n\t\t{Detalle region} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Regiones\nsource(output(\n\t\tid_tipo as string,\n\t\t{Descripción} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> TipoEnvio\nsource(output(\n\t\tPK_Cliente as integer,\n\t\tCliente_ID as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string,\n\t\tPais as string,\n\t\tCiudad as string,\n\t\tEstado as string,\n\t\tRegion as string,\n\t\t{Codigo Postal} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> MapCliente\nJoin2, ModoEnvio join(modo_envio == id_modo,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join1\nJoin3 select(mapColumn(\n\t\tnum_order,\n\t\tfec_orden,\n\t\tfec_envio,\n\t\tid_modo_envio = modo_envio,\n\t\tcliente_id,\n\t\timp_subtotal,\n\t\tregion_id,\n\t\t{Region Desc},\n\t\t{Detalle region},\n\t\tmodo_envio = Descripcion,\n\t\tid_Tipo_Envio = id_TipoEnvio,\n\t\tTipo_envio = {Descripción}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nTbOrdenes, Regiones join(region_id == {Region ID},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join2\nJoin1, TipoEnvio join(id_TipoEnvio == id_tipo,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join3\nMapCliente select(mapColumn(\n\t\tPK_Cliente,\n\t\tCliente_ID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectDataCliente\nSelect1, SelectDataCliente join(Select1@cliente_id == SelectDataCliente@Cliente_ID,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join4\nJoin4 keyGenerate(output(PK_Ordenes as long),\n\tstartAt: 1L) ~> SurrogateKey1\nSurrogateKey1 filter(!isNull(PK_Cliente) && fec_orden<fec_envio) ~> Filter1\nSurrogateKey1 filter(isNull(PK_Cliente) || fec_orden>fec_envio) ~> Filter2\nFilter1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tPK_Order as integer,\n\t\tnum_order as integer,\n\t\tfec_orden as date,\n\t\tfec_envio as date,\n\t\timp_subtotal as decimal(18,2),\n\t\tid_modo as integer,\n\t\tmodo_envio as string,\n\t\tID_Tipo_envio as integer,\n\t\tdescripcion_envio as string,\n\t\tRegion_ID as integer,\n\t\tRegion_descripcion as string,\n\t\tDetalle_Region as string,\n\t\tPK_Cliente as integer\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tpreSQLs:['Delete from FACT_Ordenes;'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPK_Order = PK_Ordenes,\n\t\tnum_order,\n\t\tfec_orden,\n\t\tfec_envio,\n\t\timp_subtotal,\n\t\tid_modo = id_modo_envio,\n\t\tmodo_envio,\n\t\tID_Tipo_envio = id_Tipo_Envio,\n\t\tdescripcion_envio = Tipo_envio,\n\t\tRegion_ID = region_id,\n\t\tRegion_descripcion = {Region Desc},\n\t\tDetalle_Region = {Detalle region},\n\t\tPK_Cliente\n\t)) ~> StoreTable\nFilter2 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tPK_Order as string,\n\t\tnum_order as string,\n\t\tfec_orden as string,\n\t\tfec_envio as string,\n\t\timp_subtotal as string,\n\t\tid_modo as string,\n\t\tmodo_envio as string,\n\t\tID_Tipo_envio as string,\n\t\tdescripcion_envio as string,\n\t\tRegion_ID as string,\n\t\tRegion_descripcion as string,\n\t\tDetalle_Region as string,\n\t\tPK_Cliente as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tpreSQLs:['delete from Garbage_Ordenes;'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Garbage"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/tb_tipo_envio_Tra')]"
+				"[concat(variables('factoryId'), '/datasets/tb_tipo_envio_Tra')]",
+				"[concat(variables('factoryId'), '/datasets/Garbage_Ordenes')]"
 			]
 		},
 		{
@@ -794,7 +880,8 @@
 									"Regiones": {},
 									"TipoEnvio": {},
 									"MapCliente": {},
-									"StoreTable": {}
+									"StoreTable": {},
+									"Garbage": {}
 								}
 							},
 							"staging": {},
