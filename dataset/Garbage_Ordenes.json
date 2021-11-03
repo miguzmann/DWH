@@ -1,0 +1,72 @@
+{
+	"name": "Garbage_Ordenes",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Dimensionality",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Garbage"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "PK_Order",
+				"type": "varchar"
+			},
+			{
+				"name": "num_order",
+				"type": "varchar"
+			},
+			{
+				"name": "fec_orden",
+				"type": "varchar"
+			},
+			{
+				"name": "fec_envio",
+				"type": "varchar"
+			},
+			{
+				"name": "imp_subtotal",
+				"type": "varchar"
+			},
+			{
+				"name": "id_modo",
+				"type": "varchar"
+			},
+			{
+				"name": "modo_envio",
+				"type": "varchar"
+			},
+			{
+				"name": "ID_Tipo_envio",
+				"type": "varchar"
+			},
+			{
+				"name": "descripcion_envio",
+				"type": "varchar"
+			},
+			{
+				"name": "Region_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Region_descripcion",
+				"type": "varchar"
+			},
+			{
+				"name": "Detalle_Region",
+				"type": "varchar"
+			},
+			{
+				"name": "PK_Cliente",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Garbage_Ordenes"
+		}
+	}
+}
