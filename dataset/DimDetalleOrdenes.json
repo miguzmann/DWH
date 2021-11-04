@@ -49,6 +49,12 @@
 				"scale": 5
 			},
 			{
+				"name": "Precio_Total",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 5
+			},
+			{
 				"name": "Ganancia",
 				"type": "decimal",
 				"precision": 18,
