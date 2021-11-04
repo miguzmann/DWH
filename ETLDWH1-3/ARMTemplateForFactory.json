@@ -29,6 +29,99 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/Fact_Ordenes')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "PP_Ordenes",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Ordenes_workflow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"TbOrdenes": {},
+									"ModoEnvio": {},
+									"Regiones": {},
+									"TipoEnvio": {},
+									"MapCliente": {},
+									"StoreTable": {},
+									"Garbage": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "PP_Detalledeordenes",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "PP_Ordenes",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Detalledeordenes_workflow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"ExTLdetallesdeordenes": {},
+									"Almacenarproducto": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Coarse"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "ETL"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/Ordenes_workflow')]",
+				"[concat(variables('factoryId'), '/dataflows/Detalledeordenes_workflow')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Main')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -224,36 +317,6 @@
 						}
 					},
 					{
-						"name": "PP_Detalledeordenes",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "1.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "Detalledeordenes_workflow",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"ExTLdetallesdeordenes": {},
-									"Almacenarproducto": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Coarse"
-						}
-					},
-					{
 						"name": "TipoDeEnvioTransform",
 						"type": "Copy",
 						"dependsOn": [],
@@ -422,7 +485,6 @@
 				"[concat(variables('factoryId'), '/datasets/LT_Customer_Tra')]",
 				"[concat(variables('factoryId'), '/dataflows/Custormer_workflow')]",
 				"[concat(variables('factoryId'), '/dataflows/Product_workflow')]",
-				"[concat(variables('factoryId'), '/dataflows/Detalledeordenes_workflow')]",
 				"[concat(variables('factoryId'), '/datasets/tb_tipo_envio')]",
 				"[concat(variables('factoryId'), '/datasets/tb_tipo_envio_Tra')]",
 				"[concat(variables('factoryId'), '/datasets/tb_modo_envio')]",
@@ -436,7 +498,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Data flow1",
+						"name": "PP_Detalledeordenes",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
@@ -449,17 +511,12 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "Ordenes_workflow",
+								"referenceName": "Detalledeordenes_workflow",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"TbOrdenes": {},
-									"ModoEnvio": {},
-									"Regiones": {},
-									"TipoEnvio": {},
-									"MapCliente": {},
-									"StoreTable": {},
-									"Garbage": {}
+									"ExTLdetallesdeordenes": {},
+									"Almacenarproducto": {}
 								}
 							},
 							"staging": {},
@@ -467,7 +524,7 @@
 								"coreCount": 8,
 								"computeType": "General"
 							},
-							"traceLevel": "Fine"
+							"traceLevel": "Coarse"
 						}
 					}
 				],
@@ -482,7 +539,7 @@
 				"lastPublishTime": "2021-10-23T04:50:24Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Ordenes_workflow')]"
+				"[concat(variables('factoryId'), '/dataflows/Detalledeordenes_workflow')]"
 			]
 		},
 		{
@@ -817,6 +874,83 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ConnectorAzureRafael')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Garbage_Ordenes')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Dimensionality",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Garbage"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "PK_Order",
+						"type": "varchar"
+					},
+					{
+						"name": "num_order",
+						"type": "varchar"
+					},
+					{
+						"name": "fec_orden",
+						"type": "varchar"
+					},
+					{
+						"name": "fec_envio",
+						"type": "varchar"
+					},
+					{
+						"name": "imp_subtotal",
+						"type": "varchar"
+					},
+					{
+						"name": "id_modo",
+						"type": "varchar"
+					},
+					{
+						"name": "modo_envio",
+						"type": "varchar"
+					},
+					{
+						"name": "ID_Tipo_envio",
+						"type": "varchar"
+					},
+					{
+						"name": "descripcion_envio",
+						"type": "varchar"
+					},
+					{
+						"name": "Region_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "Region_descripcion",
+						"type": "varchar"
+					},
+					{
+						"name": "Detalle_Region",
+						"type": "varchar"
+					},
+					{
+						"name": "PK_Cliente",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Garbage_Ordenes"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Dimensionality')]"
 			]
 		},
 		{
@@ -1793,83 +1927,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/db_target_region')]",
 				"[concat(variables('factoryId'), '/datasets/DimMetas')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Garbage_Ordenes')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Dimensionality",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Garbage"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "PK_Order",
-						"type": "varchar"
-					},
-					{
-						"name": "num_order",
-						"type": "varchar"
-					},
-					{
-						"name": "fec_orden",
-						"type": "varchar"
-					},
-					{
-						"name": "fec_envio",
-						"type": "varchar"
-					},
-					{
-						"name": "imp_subtotal",
-						"type": "varchar"
-					},
-					{
-						"name": "id_modo",
-						"type": "varchar"
-					},
-					{
-						"name": "modo_envio",
-						"type": "varchar"
-					},
-					{
-						"name": "ID_Tipo_envio",
-						"type": "varchar"
-					},
-					{
-						"name": "descripcion_envio",
-						"type": "varchar"
-					},
-					{
-						"name": "Region_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "Region_descripcion",
-						"type": "varchar"
-					},
-					{
-						"name": "Detalle_Region",
-						"type": "varchar"
-					},
-					{
-						"name": "PK_Cliente",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Garbage_Ordenes"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Dimensionality')]"
 			]
 		}
 	]
