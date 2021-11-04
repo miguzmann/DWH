@@ -138,6 +138,194 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/OrphanDetalleOrdenes')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Dimensionality",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Garbage"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Detalle Orden",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "orphan_Detalle_de_ordenes"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/OrphanCliente')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Dimensionality",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Garbage"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "PK_Cliente",
+						"type": "varchar"
+					},
+					{
+						"name": "Cliente_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "Nombre",
+						"type": "varchar"
+					},
+					{
+						"name": "Apellido",
+						"type": "varchar"
+					},
+					{
+						"name": "Segmento",
+						"type": "varchar"
+					},
+					{
+						"name": "Pais",
+						"type": "varchar"
+					},
+					{
+						"name": "Ciudad",
+						"type": "varchar"
+					},
+					{
+						"name": "Estado",
+						"type": "varchar"
+					},
+					{
+						"name": "Region",
+						"type": "varchar"
+					},
+					{
+						"name": "Codigo Postal",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Orphan_Cliente"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/OrphanMetas')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Dimensionality",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Garbage"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "PK_Meta",
+						"type": "varchar"
+					},
+					{
+						"name": "Año",
+						"type": "varchar"
+					},
+					{
+						"name": "Mes",
+						"type": "varchar"
+					},
+					{
+						"name": "Region_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "TARGET",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Orphan_Metas"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/OrphanProducto')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Dimensionality",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Garbage"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "PK_Producto",
+						"type": "varchar"
+					},
+					{
+						"name": "Producto_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "Descripcion_Subcategoria",
+						"type": "varchar"
+					},
+					{
+						"name": "Numero_Producto",
+						"type": "varchar"
+					},
+					{
+						"name": "Categoria_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "Nombre_Producto",
+						"type": "varchar"
+					},
+					{
+						"name": "Descripcion_Categoria",
+						"type": "varchar"
+					},
+					{
+						"name": "Subcategoria_ID",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Orphan_Producto"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Custormer_workflow')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -216,9 +404,15 @@
 						},
 						{
 							"name": "SurrogateKey1"
+						},
+						{
+							"name": "Filter1"
+						},
+						{
+							"name": "Filter2"
 						}
 					],
-					"script": "source(output(\n\t\t{Detalle Orden} as integer,\n\t\t{Numero Orden} as string,\n\t\t{Producto ID} as integer,\n\t\t{Linea Total} as double,\n\t\tCantidad as integer,\n\t\tDescuento as double,\n\t\t{Precio Unitario} as double,\n\t\tGanancia as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tlimit: 100,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExTLdetallesdeordenes\nExTLdetallesdeordenes select(skipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 keyGenerate(output(PK_detalledeordenes as long),\n\tstartAt: 1L) ~> SurrogateKey1\nSurrogateKey1 sink(allowSchemaDrift: true,\n\tvalidateSchema: true,\n\tinput(\n\t\tPK_DetalleOrden as integer,\n\t\tPK_Order as integer,\n\t\tDetalle_Orden as string,\n\t\tLinea_Total as double,\n\t\tCantidad as decimal(18,5),\n\t\tDescuento as decimal(5,5),\n\t\tPrecio_Unitario as decimal(18,5),\n\t\tGanancia as decimal(18,5),\n\t\tPK_Producto as integer\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Almacenarproducto"
+					"script": "source(output(\n\t\t{Detalle Orden} as integer,\n\t\t{Numero Orden} as string,\n\t\t{Producto ID} as integer,\n\t\t{Linea Total} as double,\n\t\tCantidad as integer,\n\t\tDescuento as double,\n\t\t{Precio Unitario} as double,\n\t\tGanancia as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tlimit: 100,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExTLdetallesdeordenes\nExTLdetallesdeordenes select(skipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 keyGenerate(output(PK_detalledeordenes as long),\n\tstartAt: 1L) ~> SurrogateKey1\nSurrogateKey1 filter(1==1) ~> Filter1\nSurrogateKey1 filter(!isNull(Descuento)) ~> Filter2\nFilter1 sink(allowSchemaDrift: true,\n\tvalidateSchema: true,\n\tinput(\n\t\tPK_DetalleOrden as integer,\n\t\tPK_Order as integer,\n\t\tDetalle_Orden as string,\n\t\tLinea_Total as double,\n\t\tCantidad as decimal(18,5),\n\t\tDescuento as decimal(5,5),\n\t\tPrecio_Unitario as decimal(18,5),\n\t\tGanancia as decimal(18,5),\n\t\tPK_Producto as integer\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Almacenarproducto"
 				}
 			},
 			"dependsOn": []
@@ -401,17 +595,32 @@
 								"type": "DatasetReference"
 							},
 							"name": "AlmacenarMetasDWH"
+						},
+						{
+							"dataset": {
+								"referenceName": "OrphanMetas",
+								"type": "DatasetReference"
+							},
+							"name": "Orphans"
 						}
 					],
 					"transformations": [
 						{
 							"name": "AgregarSurrogateKey"
+						},
+						{
+							"name": "Filter1"
+						},
+						{
+							"name": "Filter2"
 						}
 					],
-					"script": "source(output(\n\t\t{Año} as integer,\n\t\tMes as integer,\n\t\t{Region ID} as integer,\n\t\tTarget as decimal(18,5)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtTargetTable\nExtTargetTable keyGenerate(output(PK_Metas as long),\n\tstartAt: 1L) ~> AgregarSurrogateKey\nAgregarSurrogateKey sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tPK_Meta as integer,\n\t\t{Año} as integer,\n\t\tMes as integer,\n\t\tRegion_ID as integer,\n\t\tTARGET as decimal(18,5)\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tpreSQLs:['Truncate Table DIM_Metas'],\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPK_Meta = PK_Metas,\n\t\t{Año},\n\t\tMes,\n\t\tRegion_ID = {Region ID},\n\t\tTARGET = Target\n\t)) ~> AlmacenarMetasDWH"
+					"script": "source(output(\n\t\t{Año} as integer,\n\t\tMes as integer,\n\t\t{Region ID} as integer,\n\t\tTarget as decimal(18,5)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tignoreNoFilesFound: false) ~> ExtTargetTable\nExtTargetTable keyGenerate(output(PK_Metas as long),\n\tstartAt: 1L) ~> AgregarSurrogateKey\nAgregarSurrogateKey filter(!isNull({Año}) && !isNull(Mes) && !isNull({Region ID}) && !isNull(Target) && !isNull(PK_Metas)) ~> Filter1\nAgregarSurrogateKey filter(isNull({Año}) || isNull(Mes) || isNull({Region ID}) || isNull(Target) || isNull(PK_Metas)) ~> Filter2\nFilter1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tPK_Meta as integer,\n\t\t{Año} as integer,\n\t\tMes as integer,\n\t\tRegion_ID as integer,\n\t\tTARGET as decimal(18,5)\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tpreSQLs:['Truncate Table DIM_Metas'],\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPK_Meta = PK_Metas,\n\t\t{Año},\n\t\tMes,\n\t\tRegion_ID = {Region ID},\n\t\tTARGET = Target\n\t)) ~> AlmacenarMetasDWH\nFilter2 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tPK_Meta as string,\n\t\t{Año} as string,\n\t\tMes as string,\n\t\tRegion_ID as string,\n\t\tTARGET as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tpreSQLs:['delete from Orphan_Metas;'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPK_Meta = PK_Metas,\n\t\t{Año},\n\t\tMes,\n\t\tRegion_ID = {Region ID},\n\t\tTARGET = Target\n\t)) ~> Orphans"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/OrphanMetas')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Fact_Ordenes')]",
@@ -531,7 +740,8 @@
 								"parameters": {},
 								"datasetParameters": {
 									"ExtTargetTable": {},
-									"AlmacenarMetasDWH": {}
+									"AlmacenarMetasDWH": {},
+									"Orphans": {}
 								}
 							},
 							"staging": {},
