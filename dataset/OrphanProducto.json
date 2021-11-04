@@ -1,0 +1,52 @@
+{
+	"name": "OrphanProducto",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Dimensionality",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Garbage"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "PK_Producto",
+				"type": "varchar"
+			},
+			{
+				"name": "Producto_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Descripcion_Subcategoria",
+				"type": "varchar"
+			},
+			{
+				"name": "Numero_Producto",
+				"type": "varchar"
+			},
+			{
+				"name": "Categoria_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Nombre_Producto",
+				"type": "varchar"
+			},
+			{
+				"name": "Descripcion_Categoria",
+				"type": "varchar"
+			},
+			{
+				"name": "Subcategoria_ID",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Orphan_Producto"
+		}
+	}
+}

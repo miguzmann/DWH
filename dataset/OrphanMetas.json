@@ -1,0 +1,40 @@
+{
+	"name": "OrphanMetas",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Dimensionality",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Garbage"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "PK_Meta",
+				"type": "varchar"
+			},
+			{
+				"name": "Año",
+				"type": "varchar"
+			},
+			{
+				"name": "Mes",
+				"type": "varchar"
+			},
+			{
+				"name": "Region_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "TARGET",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Orphan_Metas"
+		}
+	}
+}

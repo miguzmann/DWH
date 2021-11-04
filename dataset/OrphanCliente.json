@@ -1,0 +1,60 @@
+{
+	"name": "OrphanCliente",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Dimensionality",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Garbage"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "PK_Cliente",
+				"type": "varchar"
+			},
+			{
+				"name": "Cliente_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "Nombre",
+				"type": "varchar"
+			},
+			{
+				"name": "Apellido",
+				"type": "varchar"
+			},
+			{
+				"name": "Segmento",
+				"type": "varchar"
+			},
+			{
+				"name": "Pais",
+				"type": "varchar"
+			},
+			{
+				"name": "Ciudad",
+				"type": "varchar"
+			},
+			{
+				"name": "Estado",
+				"type": "varchar"
+			},
+			{
+				"name": "Region",
+				"type": "varchar"
+			},
+			{
+				"name": "Codigo Postal",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Orphan_Cliente"
+		}
+	}
+}
