@@ -512,12 +512,13 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "Detalledeordenes_workflow",
+								"referenceName": "Target_Workflow",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"ExTLdetallesdeordenes": {},
-									"Almacenarproducto": {}
+									"ExtTargetTable": {},
+									"AlmacenarMetasDWH": {},
+									"Orphans": {}
 								}
 							},
 							"staging": {},
@@ -540,7 +541,7 @@
 				"lastPublishTime": "2021-10-23T04:50:24Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Detalledeordenes_workflow')]"
+				"[concat(variables('factoryId'), '/dataflows/Target_Workflow')]"
 			]
 		},
 		{
