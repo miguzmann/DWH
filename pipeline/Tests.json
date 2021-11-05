@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "Target_Workflow",
+						"referenceName": "Detalledeordenes_workflow",
 						"type": "DataFlowReference"
 					},
 					"compute": {
