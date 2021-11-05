@@ -13,6 +13,204 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/Regiones')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BankMarketBlob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketSource"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Regiones.txt",
+						"container": "files"
+					},
+					"columnDelimiter": "\t",
+					"encodingName": "ISO-8859-1",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Region ID",
+						"type": "String"
+					},
+					{
+						"name": "Region Desc",
+						"type": "String"
+					},
+					{
+						"name": "Detalle region",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TbDetalleEnvios')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "bankMarketDatabase",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketDatabase"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "num_order",
+						"type": "varchar"
+					},
+					{
+						"name": "fec_orden",
+						"type": "date"
+					},
+					{
+						"name": "fec_envio",
+						"type": "date"
+					},
+					{
+						"name": "modo_envio",
+						"type": "varchar"
+					},
+					{
+						"name": "cliente_id",
+						"type": "varchar"
+					},
+					{
+						"name": "imp_subtotal",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "region_id",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "maestria",
+					"table": "tb_detalle_envios"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/db_target_region')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BankMarketBlob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketSource"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "db_target_region.csv",
+						"container": "files"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"nullValue": "null",
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Año",
+						"type": "String"
+					},
+					{
+						"name": "Mes",
+						"type": "String"
+					},
+					{
+						"name": "Region ID",
+						"type": "String"
+					},
+					{
+						"name": "Target",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/lt_customer_localizacion')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "BankMarketBlob",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "BankMarketSource"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "lt_customer_localizacion.csv",
+						"container": "files"
+					},
+					"columnDelimiter": "\t",
+					"encodingName": "UTF-8",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Cliente ID",
+						"type": "String"
+					},
+					{
+						"name": "Pais",
+						"type": "String"
+					},
+					{
+						"name": "Ciudad",
+						"type": "String"
+					},
+					{
+						"name": "Estado",
+						"type": "String"
+					},
+					{
+						"name": "Codigo Postal",
+						"type": "String"
+					},
+					{
+						"name": "Region",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/tb_Modo_Envio_Tra')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -138,194 +336,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/OrphanDetalleOrdenes')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Dimensionality",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Garbage"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "Detalle Orden",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "orphan_Detalle_de_ordenes"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/OrphanCliente')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Dimensionality",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Garbage"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "PK_Cliente",
-						"type": "varchar"
-					},
-					{
-						"name": "Cliente_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "Nombre",
-						"type": "varchar"
-					},
-					{
-						"name": "Apellido",
-						"type": "varchar"
-					},
-					{
-						"name": "Segmento",
-						"type": "varchar"
-					},
-					{
-						"name": "Pais",
-						"type": "varchar"
-					},
-					{
-						"name": "Ciudad",
-						"type": "varchar"
-					},
-					{
-						"name": "Estado",
-						"type": "varchar"
-					},
-					{
-						"name": "Region",
-						"type": "varchar"
-					},
-					{
-						"name": "Codigo Postal",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Orphan_Cliente"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/OrphanMetas')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Dimensionality",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Garbage"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "PK_Meta",
-						"type": "varchar"
-					},
-					{
-						"name": "Año",
-						"type": "varchar"
-					},
-					{
-						"name": "Mes",
-						"type": "varchar"
-					},
-					{
-						"name": "Region_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "TARGET",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Orphan_Metas"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/OrphanProducto')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Dimensionality",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Garbage"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "PK_Producto",
-						"type": "varchar"
-					},
-					{
-						"name": "Producto_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "Descripcion_Subcategoria",
-						"type": "varchar"
-					},
-					{
-						"name": "Numero_Producto",
-						"type": "varchar"
-					},
-					{
-						"name": "Categoria_ID",
-						"type": "varchar"
-					},
-					{
-						"name": "Nombre_Producto",
-						"type": "varchar"
-					},
-					{
-						"name": "Descripcion_Categoria",
-						"type": "varchar"
-					},
-					{
-						"name": "Subcategoria_ID",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Orphan_Producto"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Custormer_workflow')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -371,7 +381,9 @@
 					"script": "source(output(\n\t\t{Cliente ID} as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> TransformedCustomer\nsource(output(\n\t\t{Cliente ID} as string,\n\t\tPais as string,\n\t\tCiudad as string,\n\t\tEstado as string,\n\t\t{Codigo Postal} as string,\n\t\tRegion as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ExtratedCustomer\nTransformedCustomer, ExtratedCustomer join(TransformedCustomer@{Cliente ID} == ExtratedCustomer@{Cliente ID},\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join1\nJoin1 select(mapColumn(\n\t\t{Cliente ID} = TransformedCustomer@{Cliente ID},\n\t\tNombre,\n\t\tApellido,\n\t\tSegmento,\n\t\tPais,\n\t\tCiudad,\n\t\tEstado,\n\t\t{Codigo Postal},\n\t\tRegion\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DataToStore\nDataToStore keyGenerate(output(Pk_Cliente as long),\n\tstartAt: 1L) ~> SurrogateKeyCliente\nSurrogateKeyCliente sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tPK_Cliente as integer,\n\t\tCliente_ID as string,\n\t\tNombre as string,\n\t\tApellido as string,\n\t\tSegmento as string,\n\t\tPais as string,\n\t\tCiudad as string,\n\t\tEstado as string,\n\t\tRegion as string,\n\t\t{Codigo Postal} as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tpreSQLs:['delete from [DIM_Cliente]'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPK_Cliente = Pk_Cliente,\n\t\tCliente_ID = {Cliente ID},\n\t\tNombre,\n\t\tApellido,\n\t\tSegmento,\n\t\tPais,\n\t\tCiudad,\n\t\tEstado,\n\t\tRegion,\n\t\t{Codigo Postal}\n\t)) ~> StoreDWHCustomer"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/lt_customer_localizacion')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Detalledeordenes_workflow')]",
@@ -387,6 +399,20 @@
 								"type": "DatasetReference"
 							},
 							"name": "ExTLdetallesdeordenes"
+						},
+						{
+							"dataset": {
+								"referenceName": "DimProducto",
+								"type": "DatasetReference"
+							},
+							"name": "Producto"
+						},
+						{
+							"dataset": {
+								"referenceName": "FactOrdenes",
+								"type": "DatasetReference"
+							},
+							"name": "Ordenes"
 						}
 					],
 					"sinks": [
@@ -396,12 +422,16 @@
 								"type": "DatasetReference"
 							},
 							"name": "Almacenarproducto"
+						},
+						{
+							"dataset": {
+								"referenceName": "OrphanDetalleOrdenes",
+								"type": "DatasetReference"
+							},
+							"name": "Orphans"
 						}
 					],
 					"transformations": [
-						{
-							"name": "Select1"
-						},
 						{
 							"name": "SurrogateKey1"
 						},
@@ -410,9 +440,27 @@
 						},
 						{
 							"name": "Filter2"
+						},
+						{
+							"name": "DerivedColumn1"
+						},
+						{
+							"name": "Join1"
+						},
+						{
+							"name": "Select1"
+						},
+						{
+							"name": "Join2"
+						},
+						{
+							"name": "Select2"
+						},
+						{
+							"name": "Select3"
 						}
 					],
-					"script": "source(output(\n\t\t{Detalle Orden} as integer,\n\t\t{Numero Orden} as string,\n\t\t{Producto ID} as integer,\n\t\t{Linea Total} as double,\n\t\tCantidad as integer,\n\t\tDescuento as double,\n\t\t{Precio Unitario} as double,\n\t\tGanancia as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tlimit: 100,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExTLdetallesdeordenes\nExTLdetallesdeordenes select(skipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 keyGenerate(output(PK_detalledeordenes as long),\n\tstartAt: 1L) ~> SurrogateKey1\nSurrogateKey1 filter(1==1) ~> Filter1\nSurrogateKey1 filter(!isNull(Descuento)) ~> Filter2\nFilter1 sink(allowSchemaDrift: true,\n\tvalidateSchema: true,\n\tinput(\n\t\tPK_DetalleOrden as integer,\n\t\tPK_Order as integer,\n\t\tDetalle_Orden as string,\n\t\tLinea_Total as double,\n\t\tCantidad as decimal(18,5),\n\t\tDescuento as decimal(5,5),\n\t\tPrecio_Unitario as decimal(18,5),\n\t\tGanancia as decimal(18,5),\n\t\tPK_Producto as integer\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError') ~> Almacenarproducto"
+					"script": "source(output(\n\t\t{Detalle Orden} as integer,\n\t\t{Numero Orden} as string,\n\t\t{Producto ID} as integer,\n\t\t{Linea Total} as double,\n\t\tCantidad as integer,\n\t\tDescuento as double,\n\t\t{Precio Unitario} as double,\n\t\tGanancia as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tlimit: 100,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> ExTLdetallesdeordenes\nsource(output(\n\t\tPK_Producto as integer,\n\t\tProducto_ID as integer,\n\t\tDescripcion_Subcategoria as string,\n\t\tNumero_Producto as string,\n\t\tCategoria_ID as string,\n\t\tNombre_Producto as string,\n\t\tDescripcion_Categoria as string,\n\t\tSubcategoria_ID as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Producto\nsource(output(\n\t\tPK_Order as integer,\n\t\tnum_order as integer,\n\t\tfec_orden as date,\n\t\tfec_envio as date,\n\t\timp_subtotal as decimal(18,2),\n\t\tid_modo as integer,\n\t\tmodo_envio as string,\n\t\tID_Tipo_envio as integer,\n\t\tdescripcion_envio as string,\n\t\tRegion_ID as integer,\n\t\tRegion_descripcion as string,\n\t\tDetalle_Region as string,\n\t\tPK_Cliente as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Ordenes\nSelect3 keyGenerate(output(PK_detalledeordenes as long),\n\tstartAt: 1L) ~> SurrogateKey1\nSurrogateKey1 filter(!isNull(PK_Producto) && !isNull(PK_Order) && (Cantidad>0 && !isNull(Cantidad))) ~> Filter1\nSurrogateKey1 filter(isNull(PK_Producto) || isNull(PK_Order) || (Cantidad>0 || !isNull(Cantidad))) ~> Filter2\nExTLdetallesdeordenes derive(Precio_Total = {Precio Unitario}*Cantidad,\n\t\t{Numero Orden B} = toInteger({Numero Orden})) ~> DerivedColumn1\nDerivedColumn1, Select1 join({Producto ID} == Producto_ID,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join1\nProducto select(mapColumn(\n\t\tPK_Producto,\n\t\tProducto_ID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nJoin1, Select2 join({Numero Orden B} == num_order,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> Join2\nOrdenes select(mapColumn(\n\t\tPK_Order,\n\t\tnum_order\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select2\nJoin2 select(mapColumn(\n\t\t{Detalle Orden},\n\t\t{Producto ID},\n\t\t{Linea Total},\n\t\tCantidad,\n\t\tDescuento,\n\t\t{Precio Unitario},\n\t\tGanancia,\n\t\tPrecio_Total,\n\t\tPK_Producto,\n\t\tPK_Order\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select3\nFilter1 sink(allowSchemaDrift: true,\n\tvalidateSchema: true,\n\tinput(\n\t\tPK_DetalleOrden as integer,\n\t\tPK_Order as integer,\n\t\tDetalle_Orden as string,\n\t\tLinea_Total as double,\n\t\tCantidad as decimal(18,5),\n\t\tDescuento as decimal(5,5),\n\t\tPrecio_Unitario as decimal(18,5),\n\t\tPrecio_Total as decimal(18,5),\n\t\tGanancia as decimal(18,5),\n\t\tPK_Producto as integer\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tpreSQLs:['Delete from DIM_detalle_ordenes;'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPK_DetalleOrden = PK_detalledeordenes,\n\t\tPK_Order,\n\t\tDetalle_Orden = {Detalle Orden},\n\t\tLinea_Total = {Linea Total},\n\t\tCantidad,\n\t\tDescuento,\n\t\tPrecio_Unitario = Precio_Total,\n\t\tPrecio_Total,\n\t\tGanancia,\n\t\tPK_Producto\n\t)) ~> Almacenarproducto\nFilter2 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tPK_DetalleOrden as string,\n\t\tPK_Order as string,\n\t\tDetalle_Orden as string,\n\t\tLinea_Total as string,\n\t\tCantidad as string,\n\t\tDescuento as string,\n\t\tPrecio_Unitario as string,\n\t\tPrecio_Total as string,\n\t\tGanancia as string,\n\t\tPK_Producto as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPK_DetalleOrden = PK_detalledeordenes,\n\t\tPK_Order,\n\t\tDetalle_Orden = {Detalle Orden},\n\t\tLinea_Total = {Linea Total},\n\t\tCantidad,\n\t\tDescuento,\n\t\tPrecio_Unitario = {Precio Unitario},\n\t\tPrecio_Total,\n\t\tGanancia,\n\t\tPK_Producto\n\t)) ~> Orphans"
 				}
 			},
 			"dependsOn": []
@@ -510,7 +558,9 @@
 				}
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/TbDetalleEnvios')]",
 				"[concat(variables('factoryId'), '/datasets/tb_Modo_Envio_Tra')]",
+				"[concat(variables('factoryId'), '/datasets/Regiones')]",
 				"[concat(variables('factoryId'), '/datasets/tb_tipo_envio_Tra')]"
 			]
 		},
@@ -619,7 +669,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/OrphanMetas')]"
+				"[concat(variables('factoryId'), '/datasets/db_target_region')]"
 			]
 		},
 		{
@@ -689,7 +739,10 @@
 								"parameters": {},
 								"datasetParameters": {
 									"ExTLdetallesdeordenes": {},
-									"Almacenarproducto": {}
+									"Producto": {},
+									"Ordenes": {},
+									"Almacenarproducto": {},
+									"Orphans": {}
 								}
 							},
 							"staging": {},
