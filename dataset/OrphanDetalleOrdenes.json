@@ -12,7 +12,43 @@
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "Detalle Orden",
+				"name": "PK_DetalleOrden",
+				"type": "varchar"
+			},
+			{
+				"name": "PK_Order",
+				"type": "varchar"
+			},
+			{
+				"name": "Detalle_Orden",
+				"type": "varchar"
+			},
+			{
+				"name": "Linea_Total",
+				"type": "varchar"
+			},
+			{
+				"name": "Cantidad",
+				"type": "varchar"
+			},
+			{
+				"name": "Descuento",
+				"type": "varchar"
+			},
+			{
+				"name": "Precio_Unitario",
+				"type": "varchar"
+			},
+			{
+				"name": "Precio_Total",
+				"type": "varchar"
+			},
+			{
+				"name": "Ganancia",
+				"type": "varchar"
+			},
+			{
+				"name": "PK_Producto",
 				"type": "varchar"
 			}
 		],
