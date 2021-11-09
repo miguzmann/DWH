@@ -13,6 +13,61 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/OrphanProducto')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Dimensionality",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Garbage"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "PK_Producto",
+						"type": "varchar"
+					},
+					{
+						"name": "Producto_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "Descripcion_Subcategoria",
+						"type": "varchar"
+					},
+					{
+						"name": "Numero_Producto",
+						"type": "varchar"
+					},
+					{
+						"name": "Categoria_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "Nombre_Producto",
+						"type": "varchar"
+					},
+					{
+						"name": "Descripcion_Categoria",
+						"type": "varchar"
+					},
+					{
+						"name": "Subcategoria_ID",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Orphan_Producto"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Regiones')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1260,47 +1315,6 @@
 						"frequency": "Week",
 						"interval": 1,
 						"startTime": "2021-11-06T20:26:00Z",
-						"timeZone": "UTC",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								17
-							],
-							"weekDays": [
-								"Friday"
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/Main')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/WeeklyTrigger')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "Main",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Week",
-						"interval": 1,
-						"startTime": "2021-11-06T20:40:00Z",
 						"timeZone": "UTC",
 						"schedule": {
 							"minutes": [
