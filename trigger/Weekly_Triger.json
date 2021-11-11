@@ -3,7 +3,7 @@
 	"properties": {
 		"description": "Weekly Posting",
 		"annotations": [],
-		"runtimeState": "Started",
+		"runtimeState": "Stopped",
 		"pipelines": [
 			{
 				"pipelineReference": {
