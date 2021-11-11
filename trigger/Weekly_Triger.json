@@ -1,6 +1,7 @@
 {
-	"name": "Disparador Semanal",
+	"name": "Weekly_Triger",
 	"properties": {
+		"description": "Weekly Posting",
 		"annotations": [],
 		"runtimeState": "Stopped",
 		"pipelines": [
