@@ -539,17 +539,15 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "Ordenes_workflow",
+								"referenceName": "Detalledeordenes_workflow",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"TbOrdenes": {},
-									"ModoEnvio": {},
-									"Regiones": {},
-									"TipoEnvio": {},
-									"MapCliente": {},
-									"StoreTable": {},
-									"Garbage": {}
+									"ExTLdetallesdeordenes": {},
+									"Producto": {},
+									"source1": {},
+									"Almacenarproducto": {},
+									"Orphans": {}
 								}
 							},
 							"staging": {},
@@ -572,7 +570,7 @@
 				"lastPublishTime": "2021-10-23T04:50:24Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/Ordenes_workflow')]"
+				"[concat(variables('factoryId'), '/dataflows/Detalledeordenes_workflow')]"
 			]
 		},
 		{
